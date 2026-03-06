@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#07080f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>LotoAgente CR</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07080f; --surface:#0f1120; --card:#141728; --border:#1e2240;
+  --gold:#f5c842; --gold2:#e8a920; --blue:#4a9eff; --blue2:#2563eb;
+  --red:#ff4d6d; --green:#22d3a0; --muted:#4a5280;
+  --text:#e8ecff; --text2:#8892b0;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── LOGIN ── */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-box{width:100%;max-width:390px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:44px 32px 40px;position:relative;}
+.login-box::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:5px;text-align:center;background:linear-gradient(135deg,#fff 30%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.login-sub{text-align:center;font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;letter-spacing:2px;margin-bottom:32px;}
+.fl{margin-bottom:14px;}
+.fl label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:7px;}
+.fi{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px 15px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;}
+.fi:focus{border-color:rgba(245,200,66,.4);}
+.login-btn{width:100%;margin-top:20px;padding:14px;background:linear-gradient(135deg,var(--gold2),var(--gold));border:none;border-radius:9px;color:#0d0a00;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;}
+.err-msg{margin-top:12px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);border-radius:7px;padding:9px 14px;font-size:11px;color:var(--red);font-family:'DM Mono',monospace;text-align:center;display:none;}
+
+/* ── APP SHELL ── */
+#app{display:none;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,8,15,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;background:linear-gradient(135deg,#fff 30%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.user-pill{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:11px;font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:1px;}
+.logout-btn{background:transparent;border:1px solid var(--border);border-radius:7px;padding:6px 11px;color:var(--text2);font-size:10px;font-family:'DM Mono',monospace;cursor:pointer;letter-spacing:1px;transition:all .2s;margin-left:8px;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+.nav-tabs{display:flex;gap:2px;padding:14px 18px 0;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{padding:9px 16px 11px;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.content{padding:22px 18px 80px;max-width:1000px;margin:0 auto;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeUp .35s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.sec-hdr{margin-bottom:18px;}
+.sec-hdr h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;}
+.sec-hdr p{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;margin-top:3px;letter-spacing:1px;}
+
+/* ── CARDS / BOXES ── */
+.box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.box+.box{margin-top:14px;}
+.box-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;margin-bottom:4px;}
+.box-sub{font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:16px;}
+
+/* ── STAT STRIP ── */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+@media(max-width:600px){.stat-strip{grid-template-columns:repeat(2,1fr)}.num-grid{grid-template-columns:repeat(2,1fr)!important}}
+.stat-c{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:14px 16px;text-align:center;position:relative;overflow:hidden;}
+.stat-c::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc-gold::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.sc-blue::before{background:linear-gradient(90deg,var(--blue),var(--blue2))}
+.sc-green::before{background:linear-gradient(90deg,var(--green),#0fa678)}
+.sc-red::before{background:linear-gradient(90deg,var(--red),#c0392b)}
+.stat-v{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;line-height:1;margin-bottom:3px;}
+.sc-gold .stat-v{color:var(--gold)}.sc-blue .stat-v{color:var(--blue)}.sc-green .stat-v{color:var(--green)}.sc-red .stat-v{color:var(--red)}
+.stat-l{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);font-family:'DM Mono',monospace;}
+
+/* ── NUMBER GRID ── */
+.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+.nc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 12px 14px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;}
+.nc:hover{transform:translateY(-2px);}
+.nc.hot{border-color:rgba(245,200,66,.3)}.nc.rising{border-color:rgba(34,211,160,.3)}.nc.cold{border-color:rgba(74,82,128,.3)}.nc.personal{border-color:rgba(74,158,255,.35)}
+.nb{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:3px;line-height:1;margin-bottom:10px;}
+.nc.hot .nb{color:var(--gold)}.nc.rising .nb{color:var(--green)}.nc.cold .nb{color:var(--muted)}.nc.normal .nb{color:var(--text)}.nc.personal .nb{color:var(--blue)}
+.ntag{position:absolute;top:8px;right:8px;font-size:7px;letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:3px;}
+.ntag.hot{background:rgba(245,200,66,.15);color:var(--gold)}.ntag.rising{background:rgba(34,211,160,.15);color:var(--green)}.ntag.cold{background:rgba(74,82,128,.2);color:var(--muted)}.ntag.personal{background:rgba(74,158,255,.15);color:var(--blue)}
+.bars{display:flex;flex-direction:column;gap:5px;}
+.bar-row{display:flex;align-items:center;gap:6px;font-size:9px;font-family:'DM Mono',monospace;color:var(--text2);}
+.bar-lbl{width:24px;text-align:right;flex-shrink:0;}
+.bar-track{flex:1;height:4px;background:var(--border);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.1s cubic-bezier(.4,0,.2,1);}
+.bf25{background:linear-gradient(90deg,var(--blue2),var(--blue))}.bf26{background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.bar-cnt{width:12px;color:var(--text);font-weight:500;}
+.tot-line{margin-top:9px;padding-top:9px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:9px;font-family:'DM Mono',monospace;color:var(--text2);}
+.tot-v{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;}
+.nc.hot .tot-v{color:var(--gold)}.nc.rising .tot-v{color:var(--green)}.nc.cold .tot-v{color:var(--muted)}.nc.normal .tot-v{color:var(--text)}.nc.personal .tot-v{color:var(--blue)}
+
+/* ── HBAR ── */
+.hbar-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-family:'DM Mono',monospace;font-size:11px;}
+.hb-num{width:28px;color:var(--gold);font-weight:500;text-align:right;flex-shrink:0;}
+.hb-track{flex:1;height:19px;background:var(--border);border-radius:4px;overflow:hidden;display:flex;}
+.hs25{height:100%;background:linear-gradient(90deg,var(--blue2),var(--blue));transition:width 1.2s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:9px;color:#fff;font-weight:600;min-width:0;overflow:hidden;}
+.hs26{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width 1.2s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:9px;color:#1a1000;font-weight:600;min-width:0;overflow:hidden;}
+.hb-tot{width:22px;text-align:center;color:var(--text);font-weight:500;flex-shrink:0;}
+
+/* ── HEATMAP ── */
+.hm-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:8px;}
+.hm-cell{aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:'DM Mono',monospace;font-weight:500;cursor:default;transition:transform .15s;}
+.hm-cell:hover{transform:scale(1.2);z-index:2;}
+
+/* ── AI AGENT ── */
+.agent-window{background:var(--surface);border:1px solid var(--border);border-radius:14px;height:340px;overflow-y:auto;padding:16px;margin-bottom:12px;scroll-behavior:smooth;}
+.agent-window::-webkit-scrollbar{width:4px;}
+.agent-window::-webkit-scrollbar-track{background:transparent;}
+.agent-window::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.msg{margin-bottom:14px;display:flex;flex-direction:column;gap:3px;}
+.msg.user{align-items:flex-end;}
+.msg.agent{align-items:flex-start;}
+.msg-bubble{max-width:80%;padding:11px 14px;border-radius:12px;font-size:13px;line-height:1.6;}
+.msg.user .msg-bubble{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.25);color:var(--text);}
+.msg.agent .msg-bubble{background:var(--card);border:1px solid var(--border);color:var(--text);}
+.msg-label{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:2px;color:var(--text2);}
+.agent-input-row{display:flex;gap:10px;}
+.agent-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;resize:none;}
+.agent-input:focus{border-color:rgba(245,200,66,.4);}
+.send-btn{padding:11px 18px;background:linear-gradient(135deg,var(--gold2),var(--gold));border:none;border-radius:9px;color:#0d0a00;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:opacity .2s;white-space:nowrap;}
+.send-btn:hover{opacity:.9;}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;}
+.typing{display:none;align-items:center;gap:6px;padding:8px 0;}
+.typing span{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.quick-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.qb{padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.qb:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── PERSONAL NUMBERS ── */
+.pn-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.pn-chip{background:rgba(74,158,255,.1);border:1px solid rgba(74,158,255,.3);border-radius:20px;padding:6px 12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--blue);display:flex;align-items:center;gap:7px;}
+.pn-chip button{background:none;border:none;color:var(--blue);cursor:pointer;font-size:14px;line-height:1;opacity:.6;}
+.pn-chip button:hover{opacity:1;}
+.pn-add-row{display:flex;gap:9px;margin-bottom:8px;}
+.pn-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;}
+.pn-input:focus{border-color:rgba(74,158,255,.4);}
+.pn-btn{padding:10px 18px;background:var(--card);border:1px solid rgba(74,158,255,.3);border-radius:8px;color:var(--blue);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.pn-btn:hover{border-color:var(--blue);}
+.pn-note{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;}
+
+/* ── LAST RESULTS ── */
+.result-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(30,34,64,.6);}
+.result-row:last-child{border-bottom:none;}
+.result-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);width:90px;flex-shrink:0;}
+.result-type{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:4px;flex-shrink:0;}
+.rt-chances{background:rgba(34,211,160,.12);color:var(--green);}
+.rt-loto{background:rgba(245,200,66,.12);color:var(--gold);}
+.result-nums{display:flex;gap:6px;flex-wrap:wrap;}
+.rnum{width:30px;height:30px;border-radius:6px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;}
+.rnum.match{background:rgba(245,200,66,.15);border-color:rgba(245,200,66,.4);color:var(--gold);}
+.rnum.pmatch{background:rgba(74,158,255,.15);border-color:rgba(74,158,255,.4);color:var(--blue);}
+.update-btn{display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s;margin-bottom:16px;}
+.update-btn:hover{border-color:var(--green);color:var(--green);}
+.update-btn .spin{display:none;width:12px;height:12px;border:2px solid var(--green);border-top-color:transparent;border-radius:50%;animation:rot .6s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg)}}
+.status-bar{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:14px;}
+.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;background:var(--green);}
+.status-dot.old{background:var(--gold);}
+.status-dot.err{background:var(--red);}
+
+/* ── LEGEND ── */
+.leg{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+.leg-i{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;}
+.leg-d{width:9px;height:9px;border-radius:2px;}
+
+/* ── FORMS ── */
+.form-inp{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;margin-bottom:10px;}
+.form-inp:focus{border-color:rgba(245,200,66,.4);}
+.btn-gold{padding:10px 20px;background:linear-gradient(135deg,var(--gold2),var(--gold));border:none;border-radius:8px;color:#0d0a00;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:opacity .2s;}
+.btn-gold:hover{opacity:.9;}
+.notify{padding:9px 14px;border-radius:7px;font-size:11px;font-family:'DM Mono',monospace;margin-top:10px;display:none;}
+.notify.ok{background:rgba(34,211,160,.1);border:1px solid rgba(34,211,160,.3);color:var(--green);}
+.notify.bad{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:var(--red);}
+
+/* ── INSIGHT BOX ── */
+.insight{border-radius:10px;padding:13px 15px;margin-bottom:10px;}
+.insight.hot{background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.2);}
+.insight.cool{background:rgba(74,82,128,.1);border:1px solid rgba(74,82,128,.25);}
+.insight.rise{background:rgba(34,211,160,.07);border:1px solid rgba(34,211,160,.2);}
+.insight.personal{background:rgba(74,158,255,.07);border:1px solid rgba(74,158,255,.2);}
+.insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.insight.hot .insight-label{color:var(--gold);}
+.insight.cool .insight-label{color:var(--muted);}
+.insight.rise .insight-label{color:var(--green);}
+.insight.personal .insight-label{color:var(--blue);}
+.insight p{font-size:13px;color:var(--text);line-height:1.6;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">LotoAgente</div>
+    <div class="login-sub">CR &nbsp;&#9670;&nbsp; JPS CHANCES &amp; LOTERIA</div>
+    <div class="fl"><label>Usuario</label><input type="text" id="lu" class="fi" placeholder="usuario" autocapitalize="none" autocomplete="username"></div>
+    <div class="fl"><label>Contrasena</label><input type="password" id="lp" class="fi" placeholder="contrasena" autocomplete="current-password"></div>
+    <button class="login-btn" onclick="doLogin()">ENTRAR</button>
+    <div id="lerr" class="err-msg">Usuario o contrasena incorrectos.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">LotoAgente CR</div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <div class="user-pill" id="userPill">USER</div>
+      <button class="logout-btn" onclick="doLogout()">SALIR</button>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('dashboard',this)">Dashboard</button>
+    <button class="nav-tab" onclick="showTab('resultados',this)">Resultados</button>
+    <button class="nav-tab" onclick="showTab('estadisticas',this)">Estadisticas</button>
+    <button class="nav-tab" onclick="showTab('personales',this)">Mis Numeros</button>
+    <button class="nav-tab" onclick="showTab('agente',this)">Agente IA</button>
+    <button class="nav-tab admin-only" onclick="showTab('admin',this)" style="display:none">Admin</button>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-panel active">
+      <div class="sec-hdr"><h2>Dashboard</h2><p>Resumen general de todos los sorteos</p></div>
+      <div class="stat-strip">
+        <div class="stat-c sc-gold"><div class="stat-v" id="ds-hot">--</div><div class="stat-l">Numero Caliente</div></div>
+        <div class="stat-c sc-green"><div class="stat-v" id="ds-rise">--</div><div class="stat-l">En Tendencia</div></div>
+        <div class="stat-c sc-blue"><div class="stat-v" id="ds-total">--</div><div class="stat-l">Total Sorteos</div></div>
+        <div class="stat-c sc-red"><div class="stat-v" id="ds-cold">--</div><div class="stat-l">Numero Frio</div></div>
+      </div>
+      <div id="dashInsights"></div>
+      <div class="box" style="margin-top:14px">
+        <div class="box-title">Ultimos Resultados JPS</div>
+        <div class="box-sub">Chances & Loteria Nacional — actualizados</div>
+        <button class="update-btn" onclick="fetchLatest()">
+          <div class="spin" id="fetchSpin"></div>
+          <span id="fetchBtnTxt">Actualizar desde JPS</span>
+        </button>
+        <div class="status-bar"><span class="status-dot" id="statusDot"></span><span id="statusTxt">Listo</span></div>
+        <div id="latestResults"></div>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div id="tab-resultados" class="tab-panel">
+      <div class="sec-hdr"><h2>Historial Resultados</h2><p>Todos los sorteos guardados — con coincidencias a tus numeros</p></div>
+      <div class="box">
+        <div class="box-title">Ingresar Resultado Manual</div>
+        <div class="box-sub">Si JPS no esta disponible, ingresa los numeros manualmente</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">FECHA</label>
+          <input type="date" id="m-fecha" class="form-inp" style="margin:0"></div>
+          <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">TIPO</label>
+          <select id="m-tipo" class="form-inp" style="margin:0;cursor:pointer">
+            <option value="Chances">Chances</option>
+            <option value="Loteria">Loteria Nacional</option>
+            <option value="Chances Mundialista">Chances Mundialista</option>
+          </select></div>
+          <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">POSICION</label>
+          <select id="m-pos" class="form-inp" style="margin:0;cursor:pointer">
+            <option value="1er">1er Premio</option>
+            <option value="2do">2do Premio</option>
+            <option value="3ero">3er Premio</option>
+          </select></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:flex-end">
+          <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">NUMERO</label>
+          <input type="number" id="m-num" class="form-inp" style="margin:0" placeholder="00-99" min="0" max="99"></div>
+          <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">SERIE</label>
+          <input type="text" id="m-serie" class="form-inp" style="margin:0" placeholder="opcional"></div>
+          <button class="btn-gold" onclick="addManualResult()" style="padding:10px 16px;font-size:14px">GUARDAR</button>
+        </div>
+        <div id="manualNotify" class="notify"></div>
+      </div>
+      <div class="box" style="margin-top:14px">
+        <div class="box-title">Historial Completo</div>
+        <div class="box-sub"><span id="histCount">0</span> sorteos guardados — numeros azules = coinciden con tus personales</div>
+        <div id="histList"></div>
+      </div>
+    </div>
+
+    <!-- ESTADISTICAS -->
+    <div id="tab-estadisticas" class="tab-panel">
+      <div class="sec-hdr"><h2>Estadisticas</h2><p>Frecuencias, tendencias, numeros calientes y frios</p></div>
+      <div class="leg">
+        <div class="leg-i"><div class="leg-d" style="background:var(--blue)"></div>2025</div>
+        <div class="leg-i"><div class="leg-d" style="background:var(--gold)"></div>2026</div>
+        <div class="leg-i"><div class="leg-d" style="background:var(--gold);border-radius:50%"></div>Caliente (7+)</div>
+        <div class="leg-i"><div class="leg-d" style="background:var(--green);border-radius:50%"></div>En Subida</div>
+        <div class="leg-i"><div class="leg-d" style="background:var(--blue);border-radius:50%"></div>Tu Numero</div>
+      </div>
+      <div class="num-grid" id="statsGrid"></div>
+      <div class="box">
+        <div class="box-title">Frecuencia Comparativa</div>
+        <div class="box-sub">Ordenado por total de apariciones</div>
+        <div id="statsHbar"></div>
+      </div>
+    </div>
+
+    <!-- MIS NUMEROS PERSONALES -->
+    <div id="tab-personales" class="tab-panel">
+      <div class="sec-hdr"><h2>Mis Numeros</h2><p>Tus intuiciones, cumpleanos y numeros de la suerte</p></div>
+      <div class="box">
+        <div class="box-title">Agregar Numero Personal</div>
+        <div class="box-sub">Numero + descripcion (ej: cumpleanos, intuicion, sueno)</div>
+        <div class="pn-add-row">
+          <input type="number" id="pn-num" class="pn-input" placeholder="00 - 99" min="0" max="99">
+          <input type="text" id="pn-desc" class="pn-input" placeholder="Descripcion (ej: Cumpleanos Juan)" style="flex:2">
+          <button class="pn-btn" onclick="addPersonalNum()">+ AGREGAR</button>
+        </div>
+        <div id="pnGrid" class="pn-grid"></div>
+        <div class="pn-note" id="pnNote"></div>
+      </div>
+      <div class="box">
+        <div class="box-title">Analisis de tus Numeros</div>
+        <div class="box-sub">Que tan frecuentes han sido tus numeros personales en el historial</div>
+        <div id="personalAnalysis"></div>
+      </div>
+      <div class="box">
+        <div class="box-title">Generador desde Fechas</div>
+        <div class="box-sub">Extrae numeros de una fecha de cumpleanos</div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <div style="flex:1"><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:6px">FECHA CUMPLEANOS</label>
+          <input type="date" id="bdate" class="pn-input" style="flex:unset;width:100%"></div>
+          <button class="pn-btn" onclick="extractFromBday()" style="height:40px">EXTRAER</button>
+        </div>
+        <div id="bdayResult" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- AGENTE IA -->
+    <div id="tab-agente" class="tab-panel">
+      <div class="sec-hdr"><h2>Agente IA</h2><p>Preguntale al agente sobre tus numeros, tendencias y estrategias</p></div>
+      <div class="quick-btns">
+        <button class="qb" onclick="quickQ('Cuales son los numeros mas calientes del historial?')">Numeros calientes</button>
+        <button class="qb" onclick="quickQ('Que numeros estan en tendencia ascendente en 2026?')">Tendencias 2026</button>
+        <button class="qb" onclick="quickQ('Analiza mis numeros personales contra el historial')">Mis personales</button>
+        <button class="qb" onclick="quickQ('Que numeros no han salido en 2026 pero salieron mucho en 2025?')">Numeros frios</button>
+        <button class="qb" onclick="quickQ('Dame una estrategia basada en los datos del historial')">Estrategia</button>
+        <button class="qb" onclick="quickQ('Cuales numeros se repiten en posiciones 1er, 2do y 3ero?')">Por posicion</button>
+      </div>
+      <div class="agent-window" id="agentWindow">
+        <div class="msg agent">
+          <div class="msg-label">AGENTE IA</div>
+          <div class="msg-bubble">Hola! Soy tu agente de analisis de loteria. Tengo acceso a todo tu historial de sorteos, tus numeros personales y las estadisticas. Puedo ayudarte a: <br><br>
+          • Identificar numeros calientes y frios<br>
+          • Analizar tendencias entre 2025 y 2026<br>
+          • Comparar tus numeros personales con el historial<br>
+          • Darte estrategias basadas en datos<br>
+          • Responder cualquier pregunta sobre los sorteos<br><br>
+          Que quieres saber?</div>
+        </div>
+      </div>
+      <div class="typing" id="typingIndicator">
+        <span></span><span></span><span></span>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:1px">Analizando...</div>
+      </div>
+      <div class="agent-input-row">
+        <textarea id="agentInput" class="agent-input" rows="2" placeholder="Pregunta al agente..."></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendToAgent()">ENVIAR</button>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="tab-admin" class="tab-panel">
+      <div class="sec-hdr"><h2>Admin Usuarios</h2><p>Solo visible para administradores</p></div>
+      <div class="box">
+        <div class="box-title">Agregar Usuario</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:flex-end;margin-top:10px">
+          <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">USUARIO</label>
+          <input type="text" id="nu-user" class="form-inp" style="margin:0" placeholder="nombre" autocapitalize="none"></div>
+          <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">CONTRASENA</label>
+          <input type="text" id="nu-pass" class="form-inp" style="margin:0" placeholder="clave"></div>
+          <button class="btn-gold" onclick="adminAddUser()" style="padding:10px 14px;font-size:14px">CREAR</button>
+        </div>
+        <div id="adminNotify" class="notify"></div>
+      </div>
+      <div class="box" style="margin-top:14px">
+        <div class="box-title">Lista de Usuarios</div>
+        <div id="adminUserList" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════════════════════
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+};
+
+// ══════════════════════════════════════════════════
+// USERS
+// ══════════════════════════════════════════════════
+let USERS = LS.get('la_users') || {
+  admin:  { pass: 'admin2026', role: 'admin' },
+  juan:   { pass: 'loto123',   role: 'viewer' },
+  maria:  { pass: 'chances456',role: 'viewer' },
+};
+function saveUsers(){ LS.set('la_users', USERS); }
+
+let currentUser = null;
+
+function doLogin(){
+  const u = document.getElementById('lu').value.trim().toLowerCase();
+  const p = document.getElementById('lp').value;
+  if(USERS[u] && USERS[u].pass === p){
+    currentUser = { username: u, role: USERS[u].role };
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('userPill').textContent = u.toUpperCase();
+    if(currentUser.role === 'admin') document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+    initApp();
+  } else {
+    document.getElementById('lerr').style.display = 'block';
+    document.getElementById('lp').value = '';
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('lu').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('lp').focus(); });
+  document.getElementById('lp').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+});
+function doLogout(){
+  currentUser = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('lu').value = '';
+  document.getElementById('lp').value = '';
+  document.getElementById('lerr').style.display = 'none';
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+}
+
+// ══════════════════════════════════════════════════
+// DATA STORE
+// ══════════════════════════════════════════════════
+let draws = LS.get('la_draws') || [
+  {fecha:'2025-01-03',tipo:'Chances',pos:'1er',num:63,serie:''},
+  {fecha:'2025-01-03',tipo:'Chances',pos:'2do',num:36,serie:''},
+  {fecha:'2025-01-03',tipo:'Chances',pos:'3ero',num:36,serie:''},
+  {fecha:'2025-01-05',tipo:'Loteria',pos:'1er',num:90,serie:'299'},
+  {fecha:'2025-01-05',tipo:'Loteria',pos:'2do',num:72,serie:''},
+  {fecha:'2025-01-07',tipo:'Chances',pos:'1er',num:42,serie:''},
+  {fecha:'2025-01-07',tipo:'Chances',pos:'2do',num:8,serie:''},
+  {fecha:'2025-01-07',tipo:'Chances',pos:'3ero',num:84,serie:''},
+  {fecha:'2025-01-10',tipo:'Chances',pos:'1er',num:46,serie:''},
+  {fecha:'2025-01-10',tipo:'Chances',pos:'2do',num:31,serie:''},
+  {fecha:'2025-01-10',tipo:'Chances',pos:'3ero',num:43,serie:''},
+  {fecha:'2026-01-04',tipo:'Chances',pos:'1er',num:3,serie:''},
+  {fecha:'2026-01-04',tipo:'Chances',pos:'2do',num:61,serie:''},
+  {fecha:'2026-01-04',tipo:'Chances',pos:'3ero',num:79,serie:''},
+  {fecha:'2026-01-06',tipo:'Loteria',pos:'1er',num:96,serie:''},
+  {fecha:'2026-01-06',tipo:'Loteria',pos:'2do',num:83,serie:''},
+  {fecha:'2026-01-06',tipo:'Loteria',pos:'3ero',num:46,serie:''},
+  {fecha:'2026-03-03',tipo:'Chances',pos:'1er',num:85,serie:'871'},
+  {fecha:'2026-03-01',tipo:'Loteria',pos:'1er',num:59,serie:'299'},
+];
+function saveDraws(){ LS.set('la_draws', draws); }
+
+let personalNums = LS.get('la_personal') || [
+  {num:22, desc:'Intuicion personal'},
+  {num:24, desc:'Cumpleanos'},
+  {num:30, desc:'Numero favorito'},
+];
+function savePersonal(){ LS.set('la_personal', personalNums); }
+
+// ══════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════
+function showTab(name, btn){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='estadisticas'||name==='dashboard') setTimeout(animateBars, 100);
+}
+
+// ══════════════════════════════════════════════════
+// ANALYTICS ENGINE
+// ══════════════════════════════════════════════════
+function computeFreq(){
+  const f25={}, f26={}, fall={};
+  draws.forEach(d => {
+    const y = d.fecha.startsWith('2025') ? '25' : '26';
+    const n = d.num;
+    if(y==='25'){ f25[n]=(f25[n]||0)+1; }
+    else { f26[n]=(f26[n]||0)+1; }
+    fall[n]=(fall[n]||0)+1;
+  });
+  return {f25, f26, fall};
+}
+
+function getType(n, f25, f26){
+  const total = (f25[n]||0)+(f26[n]||0);
+  const pNums = personalNums.map(p=>p.num);
+  if(pNums.includes(n)) return 'personal';
+  if(total >= 7) return 'hot';
+  if((f26[n]||0) > (f25[n]||0)) return 'rising';
+  if(total <= 1) return 'cold';
+  return 'normal';
+}
+
+function getHottest(){
+  const {fall} = computeFreq();
+  const sorted = Object.entries(fall).sort((a,b)=>b[1]-a[1]);
+  return sorted.length ? sorted[0][0] : '--';
+}
+function getColdest(){
+  const {fall} = computeFreq();
+  const sorted = Object.entries(fall).sort((a,b)=>a[1]-b[1]);
+  return sorted.length ? sorted[0][0] : '--';
+}
+function getRising(){
+  const {f25,f26} = computeFreq();
+  const nums = [...new Set(draws.map(d=>d.num))];
+  let best=null, bestDiff=-Infinity;
+  nums.forEach(n => {
+    const diff = (f26[n]||0) - (f25[n]||0);
+    if(diff > bestDiff){ bestDiff=diff; best=n; }
+  });
+  return best ?? '--';
+}
+
+// ══════════════════════════════════════════════════
+// INIT / RENDER
+// ══════════════════════════════════════════════════
+function initApp(){
+  renderDashboard();
+  renderStats();
+  renderHistorial();
+  renderPersonalTab();
+  renderAdminTab();
+}
+
+function renderDashboard(){
+  document.getElementById('ds-hot').textContent = String(getHottest()).padStart(2,'0');
+  document.getElementById('ds-cold').textContent = String(getColdest()).padStart(2,'0');
+  document.getElementById('ds-rise').textContent = String(getRising()).padStart(2,'0');
+  document.getElementById('ds-total').textContent = [...new Set(draws.map(d=>d.fecha))].length;
+
+  // Insights
+  const {f25,f26,fall} = computeFreq();
+  const pNums = personalNums.map(p=>p.num);
+  const matchedPersonal = pNums.filter(n => (fall[n]||0) > 0);
+  const hot = Object.entries(fall).sort((a,b)=>b[1]-a[1]).slice(0,5).map(e=>String(e[0]).padStart(2,'0'));
+  const rising = Object.entries(f26).filter(([n])=>(f26[n]||0)>(f25[n]||0)).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>String(e[0]).padStart(2,'0'));
+  const div = document.getElementById('dashInsights');
+  div.innerHTML = `
+    <div class="insight hot"><div class="insight-label">Numeros Calientes (Top 5)</div><p>${hot.join(', ')} — aparecen con mayor frecuencia en el historial total.</p></div>
+    ${rising.length ? `<div class="insight rise"><div class="insight-label">En Subida en 2026</div><p>${rising.join(', ')} — salieron mas en 2026 que en 2025. Tendencia positiva.</p></div>` : ''}
+    ${matchedPersonal.length ? `<div class="insight personal"><div class="insight-label">Tus Numeros en el Historial</div><p>${matchedPersonal.map(n=>String(n).padStart(2,'0')).join(', ')} — coinciden con tus numeros personales guardados.</p></div>` : ''}
+  `;
+
+  // Latest results preview
+  const latestDiv = document.getElementById('latestResults');
+  const byDate = {};
+  draws.forEach(d => { if(!byDate[d.fecha]) byDate[d.fecha]={}; if(!byDate[d.fecha][d.tipo]) byDate[d.fecha][d.tipo]=[]; byDate[d.fecha][d.tipo].push(d); });
+  const dates = Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).slice(0,6);
+  latestDiv.innerHTML = dates.map(fecha => {
+    return Object.entries(byDate[fecha]).map(([tipo, ds]) => {
+      const nums = ds.sort((a,b)=>a.pos.localeCompare(b.pos)).map(d => {
+        const isPersonal = personalNums.some(p=>p.num===d.num);
+        return `<div class="rnum ${isPersonal?'pmatch':''}">${String(d.num).padStart(2,'0')}</div>`;
+      }).join('');
+      const cls = tipo==='Chances'?'rt-chances':'rt-loto';
+      return `<div class="result-row">
+        <div class="result-date">${fecha}</div>
+        <div class="result-type ${cls}">${tipo}</div>
+        <div class="result-nums">${nums}</div>
+      </div>`;
+    }).join('');
+  }).join('');
+}
+
+function renderStats(){
+  const {f25,f26,fall} = computeFreq();
+  const allNums = Object.keys(fall).map(Number).sort((a,b)=>a-b);
+  const maxVal = Math.max(...Object.values(fall), 1);
+  const grid = document.getElementById('statsGrid');
+  grid.innerHTML = '';
+  allNums.forEach((n,i) => {
+    const type = getType(n,f25,f26);
+    const p25 = Math.round(((f25[n]||0)/maxVal)*100);
+    const p26 = Math.round(((f26[n]||0)/maxVal)*100);
+    const total = fall[n]||0;
+    const card = document.createElement('div');
+    card.className = `nc ${type}`;
+    card.style.animationDelay = `${0.03*i}s`;
+    card.innerHTML = `
+      ${type!=='normal'?`<div class="ntag ${type}">${type==='hot'?'CALIENTE':type==='rising'?'SUBIENDO':type==='cold'?'FRIO':'PERSONAL'}</div>`:''}
+      <div class="nb">${String(n).padStart(2,'0')}</div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-lbl">25</span><div class="bar-track"><div class="bar-fill bf25" style="width:0%" data-w="${p25}%"></div></div><span class="bar-cnt">${f25[n]||0}</span></div>
+        <div class="bar-row"><span class="bar-lbl">26</span><div class="bar-track"><div class="bar-fill bf26" style="width:0%" data-w="${p26}%"></div></div><span class="bar-cnt">${f26[n]||0}</span></div>
+      </div>
+      <div class="tot-line"><span>TOTAL</span><span class="tot-v">${total}</span></div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Hbar
+  const sorted = Object.entries(fall).sort((a,b)=>b[1]-a[1]);
+  const maxT = Math.max(...sorted.map(e=>Number(e[1])),1);
+  const hbar = document.getElementById('statsHbar');
+  hbar.innerHTML = sorted.map(([n,cnt]) => {
+    const p25 = ((f25[n]||0)/(maxT*1.1))*100;
+    const p26 = ((f26[n]||0)/(maxT*1.1))*100;
+    return `<div class="hbar-row">
+      <span class="hb-num">${String(n).padStart(2,'0')}</span>
+      <div class="hb-track">
+        <div class="hs25" style="width:0%" data-w="${p25}%">${(f25[n]||0)>0?f25[n]:''}</div>
+        <div class="hs26" style="width:0%" data-w="${p26}%">${(f26[n]||0)>0?f26[n]:''}</div>
+      </div>
+      <span class="hb-tot">${cnt}</span>
+    </div>`;
+  }).join('');
+  setTimeout(animateBars, 200);
+}
+
+function animateBars(){
+  document.querySelectorAll('[data-w]').forEach(el => { el.style.width = el.dataset.w; });
+}
+
+function renderHistorial(){
+  const byDate = {};
+  draws.forEach(d => {
+    if(!byDate[d.fecha]) byDate[d.fecha]={};
+    if(!byDate[d.fecha][d.tipo]) byDate[d.fecha][d.tipo]=[];
+    byDate[d.fecha][d.tipo].push(d);
+  });
+  const dates = Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
+  document.getElementById('histCount').textContent = draws.length;
+  const div = document.getElementById('histList');
+  div.innerHTML = dates.map(fecha => {
+    return Object.entries(byDate[fecha]).map(([tipo,ds]) => {
+      const nums = ds.sort((a,b)=>a.pos.localeCompare(b.pos)).map(d => {
+        const isPersonal = personalNums.some(p=>p.num===d.num);
+        return `<div class="rnum ${isPersonal?'pmatch':''}" title="${d.pos}">${String(d.num).padStart(2,'0')}</div>`;
+      }).join('');
+      const cls = tipo==='Chances'?'rt-chances':'rt-loto';
+      return `<div class="result-row">
+        <div class="result-date">${fecha}</div>
+        <div class="result-type ${cls}">${tipo}</div>
+        <div class="result-nums">${nums}</div>
+      </div>`;
+    }).join('');
+  }).join('');
+}
+
+function renderPersonalTab(){
+  const grid = document.getElementById('pnGrid');
+  grid.innerHTML = personalNums.map((p,i) =>
+    `<div class="pn-chip">${String(p.num).padStart(2,'0')} — ${p.desc}
+    <button onclick="removePersonal(${i})">&#215;</button></div>`
+  ).join('');
+  document.getElementById('pnNote').textContent = personalNums.length ? `${personalNums.length} numero(s) guardado(s)` : 'No hay numeros personales aun.';
+
+  // Analysis
+  const {fall,f25,f26} = computeFreq();
+  const analysis = document.getElementById('personalAnalysis');
+  if(!personalNums.length){ analysis.innerHTML = '<div style="color:var(--text2);font-family:DM Mono,monospace;font-size:12px">Agrega numeros personales para ver el analisis.</div>'; return; }
+  analysis.innerHTML = personalNums.map(p => {
+    const n = p.num;
+    const t = fall[n]||0;
+    const y25 = f25[n]||0;
+    const y26 = f26[n]||0;
+    const trend = y26 > y25 ? 'SUBIENDO' : y26 < y25 ? 'BAJANDO' : 'ESTABLE';
+    const trendColor = y26>y25?'var(--green)':y26<y25?'var(--red)':'var(--text2)';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(30,34,64,.5)">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:var(--blue);width:44px;flex-shrink:0">${String(n).padStart(2,'0')}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text);margin-bottom:3px">${p.desc}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text2)">2025: ${y25}x &nbsp;|&nbsp; 2026: ${y26}x &nbsp;|&nbsp; Total: <strong style="color:var(--text)">${t}</strong></div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:${trendColor};text-align:right">${trend}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAdminTab(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  const div = document.getElementById('adminUserList');
+  div.innerHTML = Object.entries(USERS).map(([u,d])=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(30,34,64,.5);font-family:'DM Mono',monospace;font-size:12px">
+      <div style="color:var(--gold);width:100px">${u}</div>
+      <div style="color:var(--text2);flex:1">${d.pass}</div>
+      <div style="font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:4px;${d.role==='admin'?'background:rgba(245,200,66,.15);color:var(--gold)':'background:rgba(74,158,255,.15);color:var(--blue)'}">${d.role}</div>
+      ${u!==currentUser.username?`<button style="background:none;border:1px solid rgba(255,77,109,.3);border-radius:6px;padding:4px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--red);cursor:pointer" onclick="adminDelUser('${u}')">BORRAR</button>`:'<span style="color:var(--muted);font-size:10px">(tu)</span>'}
+    </div>`).join('');
+}
+
+// ── PERSONAL NUMBER OPS ──
+function addPersonalNum(){
+  const n = parseInt(document.getElementById('pn-num').value);
+  const desc = document.getElementById('pn-desc').value.trim() || 'Sin descripcion';
+  if(isNaN(n)||n<0||n>99){ alert('Numero invalido (0-99)'); return; }
+  if(personalNums.some(p=>p.num===n)){ alert('Ese numero ya esta guardado'); return; }
+  personalNums.push({num:n,desc});
+  savePersonal();
+  document.getElementById('pn-num').value='';
+  document.getElementById('pn-desc').value='';
+  renderPersonalTab();
+  renderStats();
+  renderDashboard();
+}
+function removePersonal(i){
+  personalNums.splice(i,1);
+  savePersonal();
+  renderPersonalTab();
+  renderStats();
+  renderDashboard();
+}
+
+// ── BIRTHDAY EXTRACTOR ──
+function extractFromBday(){
+  const val = document.getElementById('bdate').value;
+  if(!val){ return; }
+  const d = new Date(val);
+  const day = d.getUTCDate();
+  const month = d.getUTCMonth()+1;
+  const year = d.getUTCFullYear();
+  const yy = year % 100;
+  const candidates = [...new Set([
+    day, month, yy,
+    (day+month)%100,
+    parseInt(String(day).padStart(2,'0').split('').reverse().join('')),
+    (day*month)%100,
+    Math.abs(day-month),
+  ])].filter(n=>n>=0&&n<=99);
+  const {fall} = computeFreq();
+  document.getElementById('bdayResult').innerHTML = `
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">NUMEROS DERIVADOS DE ${val}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      ${candidates.map(n=>`<div style="background:rgba(74,158,255,.1);border:1px solid rgba(74,158,255,.3);border-radius:8px;padding:10px 14px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--blue)">${String(n).padStart(2,'0')}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text2)">${fall[n]||0}x historial</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+// ── MANUAL RESULT ──
+function addManualResult(){
+  const fecha = document.getElementById('m-fecha').value;
+  const tipo = document.getElementById('m-tipo').value;
+  const pos = document.getElementById('m-pos').value;
+  const num = parseInt(document.getElementById('m-num').value);
+  const serie = document.getElementById('m-serie').value.trim();
+  const notify = document.getElementById('manualNotify');
+  if(!fecha||isNaN(num)||num<0||num>99){
+    notify.textContent='Completa la fecha y el numero (0-99).'; notify.className='notify bad'; notify.style.display='block'; return;
+  }
+  draws.push({fecha,tipo,pos,num,serie});
+  saveDraws();
+  renderDashboard();
+  renderHistorial();
+  renderStats();
+  document.getElementById('m-num').value='';
+  document.getElementById('m-serie').value='';
+  notify.textContent='Resultado guardado correctamente.'; notify.className='notify ok'; notify.style.display='block';
+  setTimeout(()=>notify.style.display='none',3000);
+}
+
+// ── FETCH FROM JPS (via proxy site) ──
+async function fetchLatest(){
+  const btn = document.getElementById('fetchBtnTxt');
+  const spin = document.getElementById('fetchSpin');
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusTxt');
+  btn.textContent = 'Consultando...';
+  spin.style.display = 'block';
+  dot.className = 'status-dot old';
+  txt.textContent = 'Conectando con fuente de datos...';
+  try {
+    // Use the Anthropic API to fetch + parse the latest JPS results via web search
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:'Busca los ultimos resultados de Chances y Loteria Nacional de Costa Rica JPS de hoy o esta semana en jpsloteria.com. Dame SOLO un JSON array con los resultados encontrados. Cada elemento debe tener: fecha (YYYY-MM-DD), tipo (Chances o Loteria), pos (1er/2do/3ero), num (numero entero 0-99). Solo el JSON, sin texto adicional.'}]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content.map(i=>i.text||'').filter(Boolean).join('\n');
+    const match = text.match(/\[[\s\S]*\]/);
+    if(match){
+      const fresh = JSON.parse(match[0]);
+      let added = 0;
+      fresh.forEach(r => {
+        const exists = draws.some(d=>d.fecha===r.fecha&&d.tipo===r.tipo&&d.pos===r.pos&&d.num===r.num);
+        if(!exists && r.fecha && r.num>=0 && r.num<=99){
+          draws.push({fecha:r.fecha,tipo:r.tipo,pos:r.pos||'1er',num:parseInt(r.num),serie:r.serie||''});
+          added++;
+        }
+      });
+      saveDraws();
+      renderDashboard();
+      renderHistorial();
+      renderStats();
+      dot.className='status-dot';
+      txt.textContent = added > 0 ? `${added} resultado(s) nuevo(s) agregado(s)` : 'Ya tienes los datos mas recientes';
+    } else {
+      throw new Error('No se pudo parsear respuesta');
+    }
+  } catch(e) {
+    dot.className='status-dot err';
+    txt.textContent = 'No se pudo conectar — ingresa resultados manualmente';
+  }
+  btn.textContent = 'Actualizar desde JPS';
+  spin.style.display = 'none';
+}
+
+// ── ADMIN OPS ──
+function adminAddUser(){
+  const u = document.getElementById('nu-user').value.trim().toLowerCase();
+  const p = document.getElementById('nu-pass').value.trim();
+  const n = document.getElementById('adminNotify');
+  if(!u||!p){ n.textContent='Completa usuario y contrasena.'; n.className='notify bad'; n.style.display='block'; return; }
+  if(USERS[u]){ n.textContent=`El usuario "${u}" ya existe.`; n.className='notify bad'; n.style.display='block'; return; }
+  USERS[u]={pass:p,role:'viewer'};
+  saveUsers();
+  renderAdminTab();
+  document.getElementById('nu-user').value='';
+  document.getElementById('nu-pass').value='';
+  n.textContent=`Usuario "${u}" creado.`; n.className='notify ok'; n.style.display='block';
+  setTimeout(()=>n.style.display='none',3000);
+}
+function adminDelUser(u){
+  if(!confirm(`Eliminar usuario "${u}"?`)) return;
+  delete USERS[u]; saveUsers(); renderAdminTab();
+}
+
+// ══════════════════════════════════════════════════
+// AI AGENT
+// ══════════════════════════════════════════════════
+function quickQ(q){
+  document.getElementById('agentInput').value = q;
+  sendToAgent();
+}
+
+async function sendToAgent(){
+  const input = document.getElementById('agentInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  appendMsg('user', msg);
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('typingIndicator').style.display = 'flex';
+
+  // Build context from data
+  const {f25,f26,fall} = computeFreq();
+  const hot = Object.entries(fall).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
+  const rising = Object.entries(f26).filter(([n])=>(f26[n]||0)>(f25[n]||0)).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>`${String(n).padStart(2,'0')}(26:${c},25:${f25[n]||0})`).join(', ');
+  const cold = Object.entries(fall).sort((a,b)=>a[1]-b[1]).slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
+  const pList = personalNums.map(p=>`${String(p.num).padStart(2,'0')} (${p.desc}, historial: ${fall[p.num]||0}x)`).join(', ');
+  const totalSorteos = [...new Set(draws.map(d=>d.fecha))].length;
+  const lastDraws = [...draws].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,12)
+    .map(d=>`${d.fecha} ${d.tipo} ${d.pos}: ${String(d.num).padStart(2,'0')}`).join('\n');
+
+  const systemPrompt = `Eres un agente experto en analisis de loteria de Costa Rica (JPS Chances y Loteria Nacional).
+Tienes acceso al historial completo del usuario.
+
+DATOS DEL HISTORIAL:
+- Total sorteos: ${totalSorteos}
+- Numeros calientes (mas frecuentes): ${hot}
+- Numeros en tendencia ascendente 2026: ${rising}
+- Numeros frios (menos frecuentes): ${cold}
+- Numeros personales del usuario: ${pList || 'ninguno'}
+
+ULTIMOS SORTEOS:
+${lastDraws}
+
+INSTRUCCIONES:
+- Responde en espanol, de forma clara y util
+- Usa los datos reales del historial en tus respuestas
+- Se especifico con numeros y estadisticas
+- Cuando des recomendaciones, basalas en los datos
+- Recuerda que la loteria es aleatoria — siempre menciona eso con honestidad
+- Respuestas concisas, maximo 200 palabras`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        system: systemPrompt,
+        messages:[{role:'user',content:msg}]
+      })
+    });
+    const data = await resp.json();
+    const reply = data.content?.map(c=>c.text||'').join('') || 'No se pudo obtener respuesta.';
+    appendMsg('agent', reply);
+  } catch(e){
+    appendMsg('agent','Error de conexion. Verifica tu internet e intenta de nuevo.');
+  }
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('typingIndicator').style.display = 'none';
+}
+
+function appendMsg(role, text){
+  const win = document.getElementById('agentWindow');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-label">${role==='user'?'TU':'AGENTE IA'}</div><div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp = document.getElementById('agentInput');
+  if(inp) inp.addEventListener('keydown', e => {
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendToAgent(); }
+  });
+});
+</script>
+</body>
+</html>
