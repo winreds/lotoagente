@@ -376,6 +376,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <!-- ADMIN -->
     <div id="tab-admin" class="tab-panel">
       <div class="sec-hdr"><h2>Admin Usuarios</h2><p>Solo visible para administradores</p></div>
+      <div style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.25);border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;line-height:1.7">
+        <span style="color:var(--gold);display:block;font-size:10px;letter-spacing:2px;margin-bottom:5px">IMPORTANTE</span>
+        Los usuarios creados aqui funcionan en <strong style="color:var(--text)">este dispositivo</strong>. Para que funcionen en <strong style="color:var(--text)">todos los dispositivos</strong>, debes pedirle al desarrollador que los agregue al archivo permanente.
+      </div>
       <div class="box">
         <div class="box-title">Agregar Usuario</div>
         <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:flex-end;margin-top:10px">
@@ -408,7 +412,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v5_role_tabs';
+const DATA_VERSION = 'v6_hardcoded_users';
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   localStorage.removeItem('la_draws');
   localStorage.setItem('la_data_version', DATA_VERSION);
@@ -417,15 +421,22 @@ if(localStorage.getItem('la_data_version') !== DATA_VERSION){
 // ══════════════════════════════════════════════════
 // USERS
 // ══════════════════════════════════════════════════
+// ── USUARIOS DEL SISTEMA ──
+// Estos usuarios funcionan en TODOS los dispositivos.
+// Cuando agregues un usuario nuevo desde Admin, copia la linea aqui para que sea permanente.
 const DEFAULT_USERS = {
-  admin: { pass: 'admin2026', role: 'admin' },
-  juan:  { pass: 'loto123',   role: 'viewer' },
-  maria: { pass: 'chances456',role: 'viewer' },
+  admin:   { pass: 'admin2026',   role: 'admin'  },
+  juan:    { pass: 'loto123',     role: 'viewer' },
+  maria:   { pass: 'chances456',  role: 'viewer' },
+  ekrome:  { pass: 'loto123',     role: 'viewer' },
 };
-// Merge: start with defaults, overlay any saved users on top
-// This means new users created via Admin panel are always preserved
+// Merge defaults with any locally-added users (same device session)
 let USERS = Object.assign({}, DEFAULT_USERS, LS.get('la_users') || {});
-function saveUsers(){ LS.set('la_users', USERS); saveUsers._saved=true; }
+function saveUsers(){
+  // Always re-merge with defaults to prevent losing hardcoded users
+  USERS = Object.assign({}, DEFAULT_USERS, USERS);
+  LS.set('la_users', USERS);
+}
 
 let currentUser = null;
 
