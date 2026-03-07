@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#07080f">
 <meta name="mobile-web-app-capable" content="yes">
@@ -524,13 +527,17 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v13_2025tab';
-// On every version change: wipe draws so hardcoded data reloads fresh
+const DATA_VERSION = 'v14_2025tab_final';
+// Clear ALL app data on version change to avoid stale cache issues
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
-  localStorage.removeItem('la_draws');
-  localStorage.removeItem('la_data_version');
+  const keysToRemove = [];
+  for(let i=0; i<localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(k && k.startsWith('la_')) keysToRemove.push(k);
+  }
+  keysToRemove.forEach(k => { if(k !== 'la_users') localStorage.removeItem(k); });
   localStorage.setItem('la_data_version', DATA_VERSION);
-  console.log('LotoAgente: datos actualizados a ' + DATA_VERSION);
+  console.log('LotoAgente: reset a ' + DATA_VERSION);
 }
 
 // ══════════════════════════════════════════════════
@@ -629,4 +636,892 @@ let draws = LS.get('la_draws') || [
   {fecha:'2025-01-21',tipo:'Chances',pos:'3ero',num:40,serie:''},
   {fecha:'2025-01-24',tipo:'Chances',pos:'1er',num:78,serie:''},
   {fecha:'2025-01-24',tipo:'Chances',pos:'2do',num:30,serie:''},
-  {fec
+  {fecha:'2025-01-24',tipo:'Chances',pos:'3ero',num:64,serie:''},
+  {fecha:'2025-01-26',tipo:'Loteria',pos:'1er',num:9,serie:''},
+  {fecha:'2025-01-26',tipo:'Loteria',pos:'2do',num:24,serie:''},
+  {fecha:'2025-01-26',tipo:'Loteria',pos:'3ero',num:50,serie:''},
+  {fecha:'2025-01-28',tipo:'Chances',pos:'1er',num:55,serie:''},
+  {fecha:'2025-01-28',tipo:'Chances',pos:'2do',num:52,serie:''},
+  {fecha:'2025-01-28',tipo:'Chances',pos:'3ero',num:29,serie:''},
+  {fecha:'2025-01-31',tipo:'Chances',pos:'1er',num:31,serie:''},
+  {fecha:'2025-01-31',tipo:'Chances',pos:'2do',num:9,serie:''},
+  {fecha:'2025-01-31',tipo:'Chances',pos:'3ero',num:44,serie:''},
+  {fecha:'2025-02-02',tipo:'Loteria',pos:'1er',num:43,serie:''},
+  {fecha:'2025-02-02',tipo:'Loteria',pos:'2do',num:14,serie:''},
+  {fecha:'2025-02-02',tipo:'Loteria',pos:'3ero',num:39,serie:''},
+  {fecha:'2025-02-04',tipo:'Chances',pos:'1er',num:16,serie:''},
+  {fecha:'2025-02-04',tipo:'Chances',pos:'2do',num:53,serie:''},
+  {fecha:'2025-02-04',tipo:'Chances',pos:'3ero',num:74,serie:''},
+  {fecha:'2025-02-07',tipo:'Chances',pos:'1er',num:88,serie:''},
+  {fecha:'2025-02-07',tipo:'Chances',pos:'2do',num:93,serie:''},
+  {fecha:'2025-02-07',tipo:'Chances',pos:'3ero',num:11,serie:''},
+  {fecha:'2025-02-09',tipo:'Loteria',pos:'1er',num:64,serie:''},
+  {fecha:'2025-02-09',tipo:'Loteria',pos:'2do',num:33,serie:''},
+  {fecha:'2025-02-09',tipo:'Loteria',pos:'3ero',num:2,serie:''},
+  {fecha:'2025-02-11',tipo:'Chances',pos:'1er',num:69,serie:''},
+  {fecha:'2025-02-11',tipo:'Chances',pos:'2do',num:72,serie:''},
+  {fecha:'2025-02-11',tipo:'Chances',pos:'3ero',num:6,serie:''},
+  {fecha:'2025-02-14',tipo:'Chances',pos:'1er',num:35,serie:''},
+  {fecha:'2025-02-14',tipo:'Chances',pos:'2do',num:2,serie:''},
+  {fecha:'2025-02-14',tipo:'Chances',pos:'3ero',num:61,serie:''},
+  {fecha:'2025-02-16',tipo:'Loteria',pos:'1er',num:84,serie:''},
+  {fecha:'2025-02-16',tipo:'Loteria',pos:'2do',num:84,serie:''},
+  {fecha:'2025-02-16',tipo:'Loteria',pos:'3ero',num:49,serie:''},
+  {fecha:'2025-02-18',tipo:'Chances',pos:'1er',num:25,serie:''},
+  {fecha:'2025-02-18',tipo:'Chances',pos:'2do',num:47,serie:''},
+  {fecha:'2025-02-18',tipo:'Chances',pos:'3ero',num:89,serie:''},
+  {fecha:'2025-02-21',tipo:'Chances',pos:'1er',num:93,serie:''},
+  {fecha:'2025-02-21',tipo:'Chances',pos:'2do',num:68,serie:''},
+  {fecha:'2025-02-21',tipo:'Chances',pos:'3ero',num:22,serie:''},
+  {fecha:'2025-02-23',tipo:'Loteria',pos:'1er',num:76,serie:''},
+  {fecha:'2025-02-23',tipo:'Loteria',pos:'2do',num:30,serie:''},
+  {fecha:'2025-02-23',tipo:'Loteria',pos:'3ero',num:0,serie:''},
+  {fecha:'2025-02-25',tipo:'Chances',pos:'1er',num:23,serie:''},
+  {fecha:'2025-02-25',tipo:'Chances',pos:'2do',num:63,serie:''},
+  {fecha:'2025-02-25',tipo:'Chances',pos:'3ero',num:14,serie:''},
+  {fecha:'2025-02-28',tipo:'Chances',pos:'1er',num:64,serie:''},
+  {fecha:'2025-02-28',tipo:'Chances',pos:'2do',num:49,serie:''},
+  {fecha:'2025-02-28',tipo:'Chances',pos:'3ero',num:59,serie:''},
+  {fecha:'2025-03-02',tipo:'Loteria',pos:'1er',num:66,serie:''},
+  {fecha:'2025-03-02',tipo:'Loteria',pos:'2do',num:51,serie:''},
+  {fecha:'2025-03-02',tipo:'Loteria',pos:'3ero',num:29,serie:''},
+  {fecha:'2025-03-04',tipo:'Chances',pos:'1er',num:69,serie:''},
+  {fecha:'2025-03-04',tipo:'Chances',pos:'2do',num:76,serie:''},
+  {fecha:'2025-03-04',tipo:'Chances',pos:'3ero',num:43,serie:''},
+  {fecha:'2025-03-07',tipo:'Chances',pos:'1er',num:62,serie:''},
+  {fecha:'2025-03-07',tipo:'Chances',pos:'2do',num:78,serie:''},
+  {fecha:'2025-03-07',tipo:'Chances',pos:'3ero',num:27,serie:''},
+  {fecha:'2025-03-09',tipo:'Loteria',pos:'1er',num:46,serie:''},
+  {fecha:'2025-03-09',tipo:'Loteria',pos:'2do',num:48,serie:''},
+  {fecha:'2025-03-09',tipo:'Loteria',pos:'3ero',num:82,serie:''},
+  {fecha:'2025-03-11',tipo:'Chances',pos:'1er',num:8,serie:''},
+  {fecha:'2025-03-11',tipo:'Chances',pos:'2do',num:11,serie:''},
+  {fecha:'2025-03-11',tipo:'Chances',pos:'3ero',num:94,serie:''},
+  {fecha:'2025-03-14',tipo:'Chances',pos:'1er',num:52,serie:''},
+  {fecha:'2025-03-14',tipo:'Chances',pos:'2do',num:69,serie:''},
+  {fecha:'2025-03-14',tipo:'Chances',pos:'3ero',num:7,serie:''},
+  {fecha:'2025-03-16',tipo:'Loteria',pos:'1er',num:64,serie:''},
+  {fecha:'2025-03-16',tipo:'Loteria',pos:'2do',num:80,serie:''},
+  {fecha:'2025-03-16',tipo:'Loteria',pos:'3ero',num:30,serie:''},
+  {fecha:'2025-03-18',tipo:'Chances',pos:'1er',num:73,serie:''},
+  {fecha:'2025-03-18',tipo:'Chances',pos:'2do',num:60,serie:''},
+  {fecha:'2025-03-18',tipo:'Chances',pos:'3ero',num:2,serie:''},
+  {fecha:'2025-03-21',tipo:'Chances',pos:'1er',num:38,serie:''},
+  {fecha:'2025-03-21',tipo:'Chances',pos:'2do',num:85,serie:''},
+  {fecha:'2025-03-21',tipo:'Chances',pos:'3ero',num:64,serie:''},
+  {fecha:'2025-03-23',tipo:'Loteria',pos:'1er',num:44,serie:''},
+  {fecha:'2025-03-23',tipo:'Loteria',pos:'2do',num:62,serie:''},
+  {fecha:'2025-03-23',tipo:'Loteria',pos:'3ero',num:60,serie:''},
+  {fecha:'2025-03-25',tipo:'Chances',pos:'1er',num:73,serie:''},
+  {fecha:'2025-03-25',tipo:'Chances',pos:'2do',num:59,serie:''},
+  {fecha:'2025-03-25',tipo:'Chances',pos:'3ero',num:85,serie:''},
+  {fecha:'2025-03-28',tipo:'Chances',pos:'1er',num:24,serie:''},
+  {fecha:'2025-03-28',tipo:'Chances',pos:'2do',num:34,serie:''},
+  {fecha:'2025-03-28',tipo:'Chances',pos:'3ero',num:32,serie:''},
+  {fecha:'2025-03-30',tipo:'Loteria',pos:'1er',num:26,serie:''},
+  {fecha:'2025-03-30',tipo:'Loteria',pos:'2do',num:56,serie:''},
+  {fecha:'2025-03-30',tipo:'Loteria',pos:'3ero',num:20,serie:''},
+  {fecha:'2025-04-01',tipo:'Chances',pos:'1er',num:33,serie:''},
+  {fecha:'2025-04-01',tipo:'Chances',pos:'2do',num:9,serie:''},
+  {fecha:'2025-04-01',tipo:'Chances',pos:'3ero',num:32,serie:''},
+  {fecha:'2025-04-04',tipo:'Chances',pos:'1er',num:35,serie:''},
+  {fecha:'2025-04-04',tipo:'Chances',pos:'2do',num:99,serie:''},
+  {fecha:'2025-04-04',tipo:'Chances',pos:'3ero',num:84,serie:''},
+  {fecha:'2025-04-06',tipo:'Loteria',pos:'1er',num:26,serie:''},
+  {fecha:'2025-04-06',tipo:'Loteria',pos:'2do',num:96,serie:''},
+  {fecha:'2025-04-06',tipo:'Loteria',pos:'3ero',num:40,serie:''},
+  {fecha:'2025-04-08',tipo:'Chances',pos:'1er',num:44,serie:''},
+  {fecha:'2025-04-08',tipo:'Chances',pos:'2do',num:6,serie:''},
+  {fecha:'2025-04-08',tipo:'Chances',pos:'3ero',num:14,serie:''},
+  {fecha:'2025-04-11',tipo:'Chances',pos:'1er',num:2,serie:''},
+  {fecha:'2025-04-11',tipo:'Chances',pos:'2do',num:19,serie:''},
+  {fecha:'2025-04-11',tipo:'Chances',pos:'3ero',num:59,serie:''},
+  {fecha:'2025-04-13',tipo:'Loteria',pos:'1er',num:31,serie:''},
+  {fecha:'2025-04-13',tipo:'Loteria',pos:'2do',num:9,serie:''},
+  {fecha:'2025-04-13',tipo:'Loteria',pos:'3ero',num:90,serie:''},
+  {fecha:'2025-04-22',tipo:'Chances',pos:'1er',num:80,serie:''},
+  {fecha:'2025-04-22',tipo:'Chances',pos:'2do',num:14,serie:''},
+  {fecha:'2025-04-22',tipo:'Chances',pos:'3ero',num:51,serie:''},
+  {fecha:'2025-04-25',tipo:'Chances',pos:'1er',num:16,serie:''},
+  {fecha:'2025-04-25',tipo:'Chances',pos:'2do',num:48,serie:''},
+  {fecha:'2025-04-25',tipo:'Chances',pos:'3ero',num:11,serie:''},
+  {fecha:'2025-04-27',tipo:'Loteria',pos:'1er',num:21,serie:''},
+  {fecha:'2025-04-27',tipo:'Loteria',pos:'2do',num:22,serie:''},
+  {fecha:'2025-04-27',tipo:'Loteria',pos:'3ero',num:84,serie:''},
+  {fecha:'2025-04-29',tipo:'Chances',pos:'1er',num:3,serie:''},
+  {fecha:'2025-04-29',tipo:'Chances',pos:'2do',num:40,serie:''},
+  {fecha:'2025-04-29',tipo:'Chances',pos:'3ero',num:69,serie:''},
+  {fecha:'2025-05-02',tipo:'Chances',pos:'1er',num:67,serie:''},
+  {fecha:'2025-05-02',tipo:'Chances',pos:'2do',num:7,serie:''},
+  {fecha:'2025-05-02',tipo:'Chances',pos:'3ero',num:99,serie:''},
+  {fecha:'2025-05-06',tipo:'Chances',pos:'1er',num:20,serie:''},
+  {fecha:'2025-05-06',tipo:'Chances',pos:'2do',num:53,serie:''},
+  {fecha:'2025-05-06',tipo:'Chances',pos:'3ero',num:27,serie:''},
+  {fecha:'2025-05-09',tipo:'Chances',pos:'1er',num:69,serie:''},
+  {fecha:'2025-05-09',tipo:'Chances',pos:'2do',num:65,serie:''},
+  {fecha:'2025-05-09',tipo:'Chances',pos:'3ero',num:71,serie:''},
+  {fecha:'2025-05-13',tipo:'Chances',pos:'1er',num:52,serie:''},
+  {fecha:'2025-05-13',tipo:'Chances',pos:'2do',num:99,serie:''},
+  {fecha:'2025-05-13',tipo:'Chances',pos:'3ero',num:27,serie:''},
+  {fecha:'2025-05-16',tipo:'Chances',pos:'1er',num:86,serie:''},
+  {fecha:'2025-05-16',tipo:'Chances',pos:'2do',num:90,serie:''},
+  {fecha:'2025-05-16',tipo:'Chances',pos:'3ero',num:73,serie:''},
+  {fecha:'2025-05-20',tipo:'Chances',pos:'1er',num:55,serie:''},
+  {fecha:'2025-05-20',tipo:'Chances',pos:'2do',num:70,serie:''},
+  {fecha:'2025-05-20',tipo:'Chances',pos:'3ero',num:70,serie:''},
+  {fecha:'2025-05-23',tipo:'Chances',pos:'1er',num:94,serie:''},
+  {fecha:'2025-05-23',tipo:'Chances',pos:'2do',num:29,serie:''},
+  {fecha:'2025-05-23',tipo:'Chances',pos:'3ero',num:18,serie:''},
+  {fecha:'2025-05-27',tipo:'Chances',pos:'1er',num:26,serie:''},
+  {fecha:'2025-05-27',tipo:'Chances',pos:'2do',num:90,serie:''},
+  {fecha:'2025-05-27',tipo:'Chances',pos:'3ero',num:20,serie:''},
+  {fecha:'2025-05-30',tipo:'Chances',pos:'1er',num:62,serie:''},
+  {fecha:'2025-05-30',tipo:'Chances',pos:'2do',num:22,serie:''},
+  {fecha:'2025-05-30',tipo:'Chances',pos:'3ero',num:70,serie:''},
+  {fecha:'2025-06-03',tipo:'Chances',pos:'1er',num:26,serie:''},
+  {fecha:'2025-06-03',tipo:'Chances',pos:'2do',num:23,serie:''},
+  {fecha:'2025-06-03',tipo:'Chances',pos:'3ero',num:98,serie:''},
+  {fecha:'2025-06-06',tipo:'Chances',pos:'1er',num:65,serie:''},
+  {fecha:'2025-06-06',tipo:'Chances',pos:'2do',num:91,serie:''},
+  {fecha:'2025-06-06',tipo:'Chances',pos:'3ero',num:45,serie:''},
+  {fecha:'2025-06-24',tipo:'Chances',pos:'1er',num:62,serie:''},
+  {fecha:'2025-06-24',tipo:'Chances',pos:'2do',num:12,serie:''},
+  {fecha:'2025-06-24',tipo:'Chances',pos:'3ero',num:59,serie:''},
+  {fecha:'2025-06-27',tipo:'Chances',pos:'1er',num:79,serie:''},
+  {fecha:'2025-06-27',tipo:'Chances',pos:'2do',num:52,serie:''},
+  {fecha:'2025-06-27',tipo:'Chances',pos:'3ero',num:84,serie:''},
+  {fecha:'2025-07-08',tipo:'Chances',pos:'1er',num:96,serie:''},
+  {fecha:'2025-07-08',tipo:'Chances',pos:'2do',num:15,serie:''},
+  {fecha:'2025-07-08',tipo:'Chances',pos:'3ero',num:77,serie:''},
+  {fecha:'2025-07-11',tipo:'Chances',pos:'1er',num:28,serie:''},
+  {fecha:'2025-07-11',tipo:'Chances',pos:'2do',num:32,serie:''},
+  {fecha:'2025-07-11',tipo:'Chances',pos:'3ero',num:22,serie:''},
+  {fecha:'2025-07-15',tipo:'Chances',pos:'1er',num:48,serie:''},
+  {fecha:'2025-07-15',tipo:'Chances',pos:'2do',num:93,serie:''},
+  {fecha:'2025-07-15',tipo:'Chances',pos:'3ero',num:51,serie:''},
+  {fecha:'2025-07-18',tipo:'Chances',pos:'1er',num:96,serie:''},
+  {fecha:'2025-07-18',tipo:'Chances',pos:'2do',num:69,serie:''},
+  {fecha:'2025-07-18',tipo:'Chances',pos:'3ero',num:30,serie:''},
+  {fecha:'2025-07-22',tipo:'Chances',pos:'1er',num:29,serie:''},
+  {fecha:'2025-07-22',tipo:'Chances',pos:'2do',num:22,serie:''},
+  {fecha:'2025-07-22',tipo:'Chances',pos:'3ero',num:38,serie:''},
+  {fecha:'2025-07-25',tipo:'Chances',pos:'1er',num:39,serie:''},
+  {fecha:'2025-07-25',tipo:'Chances',pos:'2do',num:77,serie:''},
+  {fecha:'2025-07-25',tipo:'Chances',pos:'3ero',num:72,serie:''},
+  {fecha:'2025-07-29',tipo:'Chances',pos:'1er',num:67,serie:''},
+  {fecha:'2025-07-29',tipo:'Chances',pos:'2do',num:82,serie:''},
+  {fecha:'2025-07-29',tipo:'Chances',pos:'3ero',num:28,serie:''},
+  {fecha:'2025-08-01',tipo:'Chances',pos:'1er',num:52,serie:''},
+  {fecha:'2025-08-01',tipo:'Chances',pos:'2do',num:13,serie:''},
+  {fecha:'2025-08-01',tipo:'Chances',pos:'3ero',num:69,serie:''},
+  {fecha:'2025-08-05',tipo:'Chances',pos:'1er',num:24,serie:''},
+  {fecha:'2025-08-05',tipo:'Chances',pos:'2do',num:47,serie:''},
+  {fecha:'2025-08-05',tipo:'Chances',pos:'3ero',num:83,serie:''},
+  {fecha:'2025-08-08',tipo:'Chances',pos:'1er',num:21,serie:''},
+  {fecha:'2025-08-08',tipo:'Chances',pos:'2do',num:76,serie:''},
+  {fecha:'2025-08-08',tipo:'Chances',pos:'3ero',num:1,serie:''},
+  {fecha:'2025-08-12',tipo:'Chances',pos:'1er',num:79,serie:''},
+  {fecha:'2025-08-12',tipo:'Chances',pos:'2do',num:97,serie:''},
+  {fecha:'2025-08-12',tipo:'Chances',pos:'3ero',num:94,serie:''},
+  {fecha:'2025-08-15',tipo:'Chances',pos:'1er',num:22,serie:''},
+  {fecha:'2025-08-15',tipo:'Chances',pos:'2do',num:93,serie:''},
+  {fecha:'2025-08-15',tipo:'Chances',pos:'3ero',num:52,serie:''},
+  {fecha:'2025-08-19',tipo:'Chances',pos:'1er',num:78,serie:''},
+  {fecha:'2025-08-19',tipo:'Chances',pos:'2do',num:1,serie:''},
+  {fecha:'2025-08-19',tipo:'Chances',pos:'3ero',num:43,serie:''},
+  {fecha:'2025-08-22',tipo:'Chances',pos:'1er',num:21,serie:''},
+  {fecha:'2025-08-22',tipo:'Chances',pos:'2do',num:16,serie:''},
+  {fecha:'2025-08-22',tipo:'Chances',pos:'3ero',num:2,serie:''},
+  {fecha:'2025-08-26',tipo:'Chances',pos:'1er',num:39,serie:''},
+  {fecha:'2025-08-26',tipo:'Chances',pos:'2do',num:42,serie:''},
+  {fecha:'2025-08-26',tipo:'Chances',pos:'3ero',num:8,serie:''},
+  {fecha:'2025-08-29',tipo:'Chances',pos:'1er',num:21,serie:''},
+  {fecha:'2025-08-29',tipo:'Chances',pos:'2do',num:72,serie:''},
+  {fecha:'2025-08-29',tipo:'Chances',pos:'3ero',num:24,serie:''},
+  {fecha:'2025-09-02',tipo:'Chances',pos:'1er',num:82,serie:''},
+  {fecha:'2025-09-02',tipo:'Chances',pos:'2do',num:64,serie:''},
+  {fecha:'2025-09-02',tipo:'Chances',pos:'3ero',num:60,serie:''},
+  {fecha:'2025-09-05',tipo:'Chances',pos:'1er',num:94,serie:''},
+  {fecha:'2025-09-05',tipo:'Chances',pos:'2do',num:88,serie:''},
+  {fecha:'2025-09-05',tipo:'Chances',pos:'3ero',num:12,serie:''},
+  {fecha:'2025-09-09',tipo:'Chances',pos:'1er',num:7,serie:''},
+  {fecha:'2025-09-09',tipo:'Chances',pos:'2do',num:78,serie:''},
+  {fecha:'2025-09-09',tipo:'Chances',pos:'3ero',num:40,serie:''},
+  {fecha:'2025-09-12',tipo:'Chances',pos:'1er',num:5,serie:''},
+  {fecha:'2025-09-12',tipo:'Chances',pos:'2do',num:58,serie:''},
+  {fecha:'2025-09-12',tipo:'Chances',pos:'3ero',num:55,serie:''},
+  {fecha:'2025-09-16',tipo:'Chances',pos:'1er',num:95,serie:''},
+  {fecha:'2025-09-16',tipo:'Chances',pos:'2do',num:99,serie:''},
+  {fecha:'2025-09-16',tipo:'Chances',pos:'3ero',num:50,serie:''},
+  {fecha:'2025-09-19',tipo:'Chances',pos:'1er',num:14,serie:''},
+  {fecha:'2025-09-19',tipo:'Chances',pos:'2do',num:13,serie:''},
+  {fecha:'2025-09-19',tipo:'Chances',pos:'3ero',num:61,serie:''},
+  {fecha:'2025-09-23',tipo:'Chances',pos:'1er',num:77,serie:''},
+  {fecha:'2025-09-23',tipo:'Chances',pos:'2do',num:75,serie:''},
+  {fecha:'2025-09-23',tipo:'Chances',pos:'3ero',num:46,serie:''},
+  {fecha:'2025-09-26',tipo:'Chances',pos:'1er',num:72,serie:''},
+  {fecha:'2025-09-26',tipo:'Chances',pos:'2do',num:78,serie:''},
+  {fecha:'2025-09-26',tipo:'Chances',pos:'3ero',num:14,serie:''},
+  {fecha:'2025-09-30',tipo:'Chances',pos:'1er',num:15,serie:''},
+  {fecha:'2025-09-30',tipo:'Chances',pos:'2do',num:38,serie:''},
+  {fecha:'2025-09-30',tipo:'Chances',pos:'3ero',num:92,serie:''},
+  {fecha:'2025-10-03',tipo:'Chances',pos:'1er',num:72,serie:''},
+  {fecha:'2025-10-03',tipo:'Chances',pos:'2do',num:41,serie:''},
+  {fecha:'2025-10-03',tipo:'Chances',pos:'3ero',num:25,serie:''},
+  {fecha:'2025-10-07',tipo:'Chances',pos:'1er',num:43,serie:''},
+  {fecha:'2025-10-07',tipo:'Chances',pos:'2do',num:97,serie:''},
+  {fecha:'2025-10-07',tipo:'Chances',pos:'3ero',num:77,serie:''},
+  {fecha:'2025-10-10',tipo:'Chances',pos:'1er',num:86,serie:''},
+  {fecha:'2025-10-10',tipo:'Chances',pos:'2do',num:83,serie:''},
+  {fecha:'2025-10-10',tipo:'Chances',pos:'3ero',num:91,serie:''},
+  {fecha:'2025-10-14',tipo:'Chances',pos:'1er',num:1,serie:''},
+  {fecha:'2025-10-14',tipo:'Chances',pos:'2do',num:62,serie:''},
+  {fecha:'2025-10-14',tipo:'Chances',pos:'3ero',num:24,serie:''},
+  {fecha:'2025-10-17',tipo:'Chances',pos:'1er',num:13,serie:''},
+  {fecha:'2025-10-17',tipo:'Chances',pos:'2do',num:41,serie:''},
+  {fecha:'2025-10-17',tipo:'Chances',pos:'3ero',num:19,serie:''},
+  {fecha:'2026-01-04',tipo:'Loteria',pos:'1er',num:3,serie:''},
+  {fecha:'2026-01-04',tipo:'Loteria',pos:'2do',num:61,serie:''},
+  {fecha:'2026-01-04',tipo:'Loteria',pos:'3ero',num:79,serie:''},
+  {fecha:'2026-01-06',tipo:'Chances',pos:'1er',num:96,serie:''},
+  {fecha:'2026-01-06',tipo:'Chances',pos:'2do',num:83,serie:''},
+  {fecha:'2026-01-06',tipo:'Chances',pos:'3ero',num:46,serie:''},
+  {fecha:'2026-01-09',tipo:'Chances',pos:'1er',num:19,serie:''},
+  {fecha:'2026-01-09',tipo:'Chances',pos:'2do',num:4,serie:''},
+  {fecha:'2026-01-09',tipo:'Chances',pos:'3ero',num:74,serie:''},
+  {fecha:'2026-01-11',tipo:'Loteria',pos:'1er',num:63,serie:''},
+  {fecha:'2026-01-11',tipo:'Loteria',pos:'2do',num:93,serie:''},
+  {fecha:'2026-01-11',tipo:'Loteria',pos:'3ero',num:94,serie:''},
+  {fecha:'2026-01-13',tipo:'Chances',pos:'1er',num:55,serie:''},
+  {fecha:'2026-01-13',tipo:'Chances',pos:'2do',num:48,serie:''},
+  {fecha:'2026-01-13',tipo:'Chances',pos:'3ero',num:86,serie:''},
+  {fecha:'2026-01-16',tipo:'Chances',pos:'1er',num:0,serie:''},
+  {fecha:'2026-01-16',tipo:'Chances',pos:'2do',num:13,serie:''},
+  {fecha:'2026-01-16',tipo:'Chances',pos:'3ero',num:51,serie:''},
+  {fecha:'2026-01-18',tipo:'Loteria',pos:'1er',num:63,serie:''},
+  {fecha:'2026-01-18',tipo:'Loteria',pos:'2do',num:60,serie:''},
+  {fecha:'2026-01-18',tipo:'Loteria',pos:'3ero',num:43,serie:''},
+  {fecha:'2026-01-20',tipo:'Chances',pos:'1er',num:76,serie:''},
+  {fecha:'2026-01-20',tipo:'Chances',pos:'2do',num:62,serie:''},
+  {fecha:'2026-01-20',tipo:'Chances',pos:'3ero',num:10,serie:''},
+  {fecha:'2026-01-23',tipo:'Chances',pos:'1er',num:45,serie:''},
+  {fecha:'2026-01-23',tipo:'Chances',pos:'2do',num:34,serie:''},
+  {fecha:'2026-01-23',tipo:'Chances',pos:'3ero',num:34,serie:''},
+  {fecha:'2026-01-25',tipo:'Loteria',pos:'1er',num:85,serie:''},
+  {fecha:'2026-01-25',tipo:'Loteria',pos:'2do',num:13,serie:''},
+  {fecha:'2026-01-25',tipo:'Loteria',pos:'3ero',num:92,serie:''},
+  {fecha:'2026-01-27',tipo:'Chances',pos:'1er',num:58,serie:''},
+  {fecha:'2026-01-27',tipo:'Chances',pos:'2do',num:83,serie:''},
+  {fecha:'2026-01-27',tipo:'Chances',pos:'3ero',num:84,serie:''},
+  {fecha:'2026-01-30',tipo:'Chances',pos:'1er',num:36,serie:''},
+  {fecha:'2026-01-30',tipo:'Chances',pos:'2do',num:65,serie:''},
+  {fecha:'2026-01-30',tipo:'Chances',pos:'3ero',num:0,serie:''},
+  {fecha:'2026-01-31',tipo:'Chances Mundialista',pos:'1er',num:63,serie:''},
+  {fecha:'2026-01-31',tipo:'Chances Mundialista',pos:'2do',num:78,serie:''},
+  {fecha:'2026-01-31',tipo:'Chances Mundialista',pos:'3ero',num:29,serie:''},
+  {fecha:'2026-02-02',tipo:'Loteria',pos:'1er',num:45,serie:''},
+  {fecha:'2026-02-02',tipo:'Loteria',pos:'2do',num:98,serie:''},
+  {fecha:'2026-02-02',tipo:'Loteria',pos:'3ero',num:27,serie:''},
+  {fecha:'2026-02-04',tipo:'Chances',pos:'1er',num:35,serie:''},
+  {fecha:'2026-02-04',tipo:'Chances',pos:'2do',num:27,serie:''},
+  {fecha:'2026-02-04',tipo:'Chances',pos:'3ero',num:24,serie:''},
+  {fecha:'2026-02-06',tipo:'Chances',pos:'1er',num:2,serie:''},
+  {fecha:'2026-02-06',tipo:'Chances',pos:'2do',num:99,serie:''},
+  {fecha:'2026-02-06',tipo:'Chances',pos:'3ero',num:74,serie:''},
+  {fecha:'2026-02-08',tipo:'Loteria',pos:'1er',num:99,serie:''},
+  {fecha:'2026-02-08',tipo:'Loteria',pos:'2do',num:64,serie:''},
+  {fecha:'2026-02-08',tipo:'Loteria',pos:'3ero',num:70,serie:''},
+  {fecha:'2026-02-10',tipo:'Chances',pos:'1er',num:7,serie:''},
+  {fecha:'2026-02-10',tipo:'Chances',pos:'2do',num:39,serie:''},
+  {fecha:'2026-02-10',tipo:'Chances',pos:'3ero',num:98,serie:''},
+  {fecha:'2026-02-13',tipo:'Chances',pos:'1er',num:91,serie:''},
+  {fecha:'2026-02-13',tipo:'Chances',pos:'2do',num:15,serie:''},
+  {fecha:'2026-02-13',tipo:'Chances',pos:'3ero',num:16,serie:''},
+  {fecha:'2026-02-15',tipo:'Loteria',pos:'1er',num:32,serie:''},
+  {fecha:'2026-02-15',tipo:'Loteria',pos:'2do',num:91,serie:''},
+  {fecha:'2026-02-15',tipo:'Loteria',pos:'3ero',num:83,serie:''},
+  {fecha:'2026-02-17',tipo:'Chances',pos:'1er',num:70,serie:''},
+  {fecha:'2026-02-17',tipo:'Chances',pos:'2do',num:50,serie:''},
+  {fecha:'2026-02-17',tipo:'Chances',pos:'3ero',num:23,serie:''},
+  {fecha:'2026-02-20',tipo:'Chances',pos:'1er',num:21,serie:''},
+  {fecha:'2026-02-20',tipo:'Chances',pos:'2do',num:98,serie:''},
+  {fecha:'2026-02-20',tipo:'Chances',pos:'3ero',num:48,serie:''},
+  {fecha:'2026-02-22',tipo:'Loteria',pos:'1er',num:0,serie:''},
+  {fecha:'2026-02-22',tipo:'Loteria',pos:'2do',num:92,serie:''},
+  {fecha:'2026-02-22',tipo:'Loteria',pos:'3ero',num:43,serie:''},
+  {fecha:'2026-02-24',tipo:'Chances',pos:'1er',num:33,serie:''},
+  {fecha:'2026-02-24',tipo:'Chances',pos:'2do',num:82,serie:''},
+  {fecha:'2026-02-24',tipo:'Chances',pos:'3ero',num:60,serie:''},
+  {fecha:'2026-02-27',tipo:'Chances',pos:'1er',num:0,serie:''},
+  {fecha:'2026-02-27',tipo:'Chances',pos:'2do',num:92,serie:''},
+  {fecha:'2026-02-27',tipo:'Chances',pos:'3ero',num:43,serie:''},
+  {fecha:'2026-02-28',tipo:'Chances Mundialista',pos:'1er',num:80,serie:''},
+  {fecha:'2026-02-28',tipo:'Chances Mundialista',pos:'2do',num:88,serie:''},
+  {fecha:'2026-02-28',tipo:'Chances Mundialista',pos:'3ero',num:26,serie:''},
+  {fecha:'2026-03-01',tipo:'Loteria',pos:'1er',num:59,serie:''},
+  {fecha:'2026-03-01',tipo:'Loteria',pos:'2do',num:78,serie:''},
+  {fecha:'2026-03-01',tipo:'Loteria',pos:'3ero',num:30,serie:''},
+  {fecha:'2026-03-03',tipo:'Chances',pos:'1er',num:85,serie:''},
+  {fecha:'2026-03-03',tipo:'Chances',pos:'2do',num:74,serie:''},
+  {fecha:'2026-03-03',tipo:'Chances',pos:'3ero',num:78,serie:''},
+  {fecha:'2026-03-06',tipo:'Chances',pos:'1er',num:51,serie:''},
+  {fecha:'2026-03-06',tipo:'Chances',pos:'2do',num:84,serie:''},
+  {fecha:'2026-03-06',tipo:'Chances',pos:'3ero',num:1,serie:''}
+]
+function saveDraws(){ LS.set('la_draws', draws); }
+function resetToDefault(){
+  if(!confirm('Esto recarga los 29 sorteos base y borra datos manuales. Continuar?')) return;
+  localStorage.removeItem('la_draws');
+  location.reload();
+}
+
+let personalNums = LS.get('la_personal') || [
+  {num:22, desc:'Intuicion personal'},
+  {num:24, desc:'Cumpleanos'},
+  {num:30, desc:'Numero favorito'},
+];
+function savePersonal(){ LS.set('la_personal', personalNums); }
+
+// ══════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════
+function showTab(name, btn){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='estadisticas'||name==='dashboard') setTimeout(animateBars, 100);
+  if(name==='aguizotes') renderAguizotes();
+}
+
+// ══════════════════════════════════════════════════
+// ANALYTICS ENGINE
+// ══════════════════════════════════════════════════
+function computeFreq(){
+  const f25={}, f26={}, fall={};
+  draws.forEach(d => {
+    const y = d.fecha.startsWith('2025') ? '25' : '26';
+    const n = d.num;
+    if(y==='25'){ f25[n]=(f25[n]||0)+1; }
+    else { f26[n]=(f26[n]||0)+1; }
+    fall[n]=(fall[n]||0)+1;
+  });
+  return {f25, f26, fall};
+}
+
+function getType(n, f25, f26){
+  const total = (f25[n]||0)+(f26[n]||0);
+  const pNums = personalNums.map(p=>p.num);
+  if(pNums.includes(n)) return 'personal';
+  if(total >= 3) return 'hot';
+  if((f26[n]||0) > (f25[n]||0)) return 'rising';
+  if(total <= 1) return 'cold';
+  return 'normal';
+}
+
+function getHottest(){
+  const {fall} = computeFreq();
+  const sorted = Object.entries(fall).sort((a,b)=>b[1]-a[1]);
+  return sorted.length ? sorted[0][0] : '--';
+}
+function getColdest(){
+  const {fall} = computeFreq();
+  const sorted = Object.entries(fall).sort((a,b)=>a[1]-b[1]);
+  return sorted.length ? sorted[0][0] : '--';
+}
+function getRising(){
+  const {f25,f26} = computeFreq();
+  const nums = [...new Set(draws.map(d=>d.num))];
+  let best=null, bestDiff=-Infinity;
+  nums.forEach(n => {
+    const diff = (f26[n]||0) - (f25[n]||0);
+    if(diff > bestDiff){ bestDiff=diff; best=n; }
+  });
+  return best ?? '--';
+}
+
+// ══════════════════════════════════════════════════
+// INIT / RENDER
+// ══════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════
+// AGÜIZOTES
+// ══════════════════════════════════════════════════
+function renderAguizotes(){
+  if(typeof personalNums === 'undefined') return;
+  const {fall, f25, f26} = computeFreq();
+
+  // Verificacion de Enero: buscar sorteos de enero y contar 78 y 29
+  const eneroDraws = draws.filter(d => d.fecha.match(/-01-/));
+  const eneroNums = eneroDraws.map(d => d.num);
+  const count78 = eneroNums.filter(n => n===78).length;
+  const count29 = eneroNums.filter(n => n===29).length;
+  const totalEneroSorteos = [...new Set(eneroDraws.map(d=>d.fecha))].length;
+
+  const eneroEl = document.getElementById('enero-verificacion');
+  if(eneroEl){
+    const make = (num, cnt) => {
+      const pct = totalEneroSorteos > 0 ? Math.round((cnt/totalEneroSorteos)*100) : 0;
+      const color = cnt>=2 ? 'var(--gold)' : cnt===1 ? 'var(--blue)' : 'var(--muted)';
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)">'
+        +'<span style="font-family:Bebas Neue,sans-serif;font-size:20px;color:'+color+';width:32px">'+String(num).padStart(2,'0')+'</span>'
+        +'<div style="flex:1"><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:3px;transition:width 1s"></div></div></div>'
+        +'<span style="font-family:DM Mono,monospace;font-size:11px;color:'+color+'">'+cnt+'x en enero ('+pct+'%)</span>'
+        +'</div>';
+    };
+    eneroEl.innerHTML = '<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;color:var(--text2);margin-bottom:6px">'+totalEneroSorteos+' SORTEOS DE ENERO EN HISTORIAL</div>'
+      + make(78, count78) + make(29, count29);
+  }
+
+  // Stats generales de todos los aguizotes
+  const aguizoteNums = [78,29,33,0,4,41];
+  const statsEl = document.getElementById('aguizotes-stats');
+  if(statsEl){
+    const rows = aguizoteNums.map(n => {
+      const total = fall[n]||0;
+      const en2025 = f25[n]||0;
+      const en2026 = f26[n]||0;
+      const eneroCount = draws.filter(d=>d.fecha.match(/-01-/) && d.num===n).length;
+      const maxV = Math.max(...aguizoteNums.map(x=>fall[x]||0),1);
+      const pct = Math.round((total/maxV)*100);
+      const label = n===78||n===29 ? 'ENERO' : n===33 ? 'S.SANTA' : 'MAMA';
+      const lcolor = n===78||n===29?'rgba(74,158,255,.8)':n===33?'rgba(245,200,66,.8)':'rgba(255,77,109,.8)';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)">'
+        +'<div style="width:42px;height:42px;border-radius:10px;background:rgba(30,34,64,.8);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:22px;color:var(--text);flex-shrink:0">'+String(n).padStart(2,'0')+'</div>'
+        +'<span style="font-family:DM Mono,monospace;font-size:8px;padding:2px 6px;border-radius:3px;background:'+lcolor.replace('.8','.15')+';color:'+lcolor+';flex-shrink:0">'+label+'</span>'
+        +'<div style="flex:1"><div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px;transition:width 1s"></div></div></div>'
+        +'<div style="text-align:right;flex-shrink:0">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--text);line-height:1">'+total+'x</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:var(--text2)">'+en2025+' en 25 · '+en2026+' en 26</div>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+    statsEl.innerHTML = rows;
+  }
+}
+
+function initApp(){
+  renderDashboard();
+  renderStats();
+  renderHistorial();
+  renderPersonalTab();
+  renderAdminTab();
+  renderAguizotes();
+}
+
+function renderDashboard(){
+  document.getElementById('ds-hot').textContent = String(getHottest()).padStart(2,'0');
+  document.getElementById('ds-cold').textContent = String(getColdest()).padStart(2,'0');
+  document.getElementById('ds-rise').textContent = String(getRising()).padStart(2,'0');
+  document.getElementById('ds-total').textContent = [...new Set(draws.map(d=>d.fecha))].length;
+
+  // Insights
+  const {f25,f26,fall} = computeFreq();
+  const pNums = personalNums.map(p=>p.num);
+  const matchedPersonal = pNums.filter(n => (fall[n]||0) > 0);
+  const hot = Object.entries(fall).sort((a,b)=>b[1]-a[1]).slice(0,5).map(e=>String(e[0]).padStart(2,'0'));
+  const rising = Object.entries(f26).filter(([n])=>(f26[n]||0)>(f25[n]||0)).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>String(e[0]).padStart(2,'0'));
+  const div = document.getElementById('dashInsights');
+  div.innerHTML = `
+    <div class="insight hot"><div class="insight-label">Numeros Calientes (Top 5)</div><p>${hot.join(', ')} — aparecen con mayor frecuencia en el historial total.</p></div>
+    ${rising.length ? `<div class="insight rise"><div class="insight-label">En Subida en 2026</div><p>${rising.join(', ')} — salieron mas en 2026 que en 2025. Tendencia positiva.</p></div>` : ''}
+    ${matchedPersonal.length ? `<div class="insight personal"><div class="insight-label">Tus Numeros en el Historial</div><p>${matchedPersonal.map(n=>String(n).padStart(2,'0')).join(', ')} — coinciden con tus numeros personales guardados.</p></div>` : ''}
+  `;
+
+  // Latest results preview
+  const latestDiv = document.getElementById('latestResults');
+  const byDate = {};
+  draws.forEach(d => { if(!byDate[d.fecha]) byDate[d.fecha]={}; if(!byDate[d.fecha][d.tipo]) byDate[d.fecha][d.tipo]=[]; byDate[d.fecha][d.tipo].push(d); });
+  const dates = Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).slice(0,6);
+  latestDiv.innerHTML = dates.map(fecha => {
+    return Object.entries(byDate[fecha]).map(([tipo, ds]) => {
+      const nums = ds.sort((a,b)=>a.pos.localeCompare(b.pos)).map(d => {
+        const isPersonal = personalNums.some(p=>p.num===d.num);
+        return `<div class="rnum ${isPersonal?'pmatch':''}">${String(d.num).padStart(2,'0')}</div>`;
+      }).join('');
+      const cls = tipo==='Chances'?'rt-chances':'rt-loto';
+      return `<div class="result-row">
+        <div class="result-date">${fecha}</div>
+        <div class="result-type ${cls}">${tipo}</div>
+        <div class="result-nums">${nums}</div>
+      </div>`;
+    }).join('');
+  }).join('');
+}
+
+function renderStats(){
+  console.log('renderStats: draws count=', draws.length, 'last=', draws[draws.length-1]);
+  const {f25,f26,fall} = computeFreq();
+  const sortedByFreq = Object.keys(fall).map(Number).sort((a,b)=>(fall[b]-fall[a])||(a-b));
+  const maxVal = Math.max(...Object.values(fall),1);
+  const total26Draws = [...new Set(draws.filter(d=>d.fecha.startsWith('2026')).map(d=>d.fecha))].length;
+
+  // ── RANKING TABLE (2026 only) ──
+  const rankEl = document.getElementById('rankingTable');
+  const rankSub = document.getElementById('rankingSubtitle');
+  // Sort by 2026 frequency for the ranking display
+  const sorted26 = Object.keys(f26).map(Number).sort((a,b)=>(f26[b]-f26[a])||(a-b));
+  const max26 = Math.max(...Object.values(f26), 1);
+  if(rankSub) rankSub.textContent = total26Draws+' sorteos 2026 — '+sorted26.length+' numeros distintos';
+
+  const groups = {};
+  sorted26.forEach(n=>{ const c=f26[n]; if(!groups[c]) groups[c]=[]; groups[c].push(n); });
+  const freqLevels = Object.keys(groups).map(Number).sort((a,b)=>b-a);
+  const medalColors=['#f5c842','#b0bec5','#cd7f32'];
+  const medalLabels=['ORO','PLATA','BRONCE'];
+
+  rankEl.innerHTML = freqLevels.map((freq,gi)=>{
+    const nums=groups[freq];
+    const isP=n=>personalNums.some(p=>p.num===n);
+    const medal=gi<3?'<span style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;padding:2px 7px;border-radius:3px;background:'+medalColors[gi]+'22;color:'+medalColors[gi]+';margin-right:8px">'+medalLabels[gi]+'</span>':'';
+    const barPct=Math.round((freq/max26)*100);
+    const numColor=freq>=3?'var(--gold)':freq>=2?'var(--blue)':'var(--muted)';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid rgba(30,34,64,.5)">'+
+      '<div style="width:32px;font-family:Bebas Neue,sans-serif;font-size:22px;color:'+numColor+';text-align:center;flex-shrink:0">'+freq+'x</div>'+
+      '<div style="flex:1">'+medal+
+        '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:'+(gi<3?'6px':'2px')+'">'+
+          nums.map(n=>'<div style="width:36px;height:36px;border-radius:8px;background:'+(isP(n)?'rgba(74,158,255,.15)':freq>=3?'rgba(245,200,66,.12)':freq>=2?'rgba(74,158,255,.08)':'rgba(30,34,64,.6)')+';border:1px solid '+(isP(n)?'rgba(74,158,255,.4)':freq>=3?'rgba(245,200,66,.35)':freq>=2?'rgba(74,158,255,.25)':'var(--border)')+';display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:17px;color:'+(isP(n)?'var(--blue)':freq>=3?'var(--gold)':freq>=2?'var(--blue)':'var(--text2)')+'">'+String(n).padStart(2,'0')+'</div>').join('')+
+        '</div>'+
+      '</div>'+
+      '<div style="width:70px;flex-shrink:0">'+
+        '<div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+barPct+'%;background:'+(freq>=3?'linear-gradient(90deg,var(--gold2),var(--gold))':freq>=2?'linear-gradient(90deg,var(--blue2),var(--blue))':'var(--muted)')+';border-radius:3px"></div></div>'+
+        '<div style="font-family:DM Mono,monospace;font-size:9px;color:var(--text2);margin-top:4px;text-align:right">'+nums.length+' num'+(nums.length>1?'s':'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  // ── NUMBER CARDS sorted by frequency ──
+  const grid=document.getElementById('statsGrid');
+  grid.innerHTML='';
+  sortedByFreq.forEach((n,i)=>{
+    const type=getType(n,f25,f26);
+    const p25=Math.round(((f25[n]||0)/maxVal)*100);
+    const p26=Math.round(((f26[n]||0)/maxVal)*100);
+    const total=fall[n]||0;
+    const card=document.createElement('div');
+    card.className='nc '+type;
+    card.style.animationDelay=0.02*i+'s';
+    card.innerHTML=(type!=='normal'?'<div class="ntag '+type+'">'+(type==='hot'?'CALIENTE':type==='rising'?'SUBIENDO':type==='cold'?'FRIO':'PERSONAL')+'</div>':'')+
+      '<div class="nb">'+String(n).padStart(2,'0')+'</div>'+
+      '<div class="bars">'+
+        '<div class="bar-row"><span class="bar-lbl">25</span><div class="bar-track"><div class="bar-fill bf25" style="width:0%" data-w="'+p25+'%"></div></div><span class="bar-cnt">'+(f25[n]||0)+'</span></div>'+
+        '<div class="bar-row"><span class="bar-lbl">26</span><div class="bar-track"><div class="bar-fill bf26" style="width:0%" data-w="'+p26+'%"></div></div><span class="bar-cnt">'+(f26[n]||0)+'</span></div>'+
+      '</div>'+
+      '<div class="tot-line"><span>TOTAL</span><span class="tot-v">'+total+'</span></div>';
+    grid.appendChild(card);
+  });
+
+  // ── HBAR ──
+  const sortedH=Object.entries(fall).sort((a,b)=>b[1]-a[1]);
+  const maxT=Math.max(...sortedH.map(e=>Number(e[1])),1);
+  const hbar=document.getElementById('statsHbar');
+  hbar.innerHTML=sortedH.map(([n,cnt])=>{
+    const p25=((f25[n]||0)/(maxT*1.1))*100;
+    const p26=((f26[n]||0)/(maxT*1.1))*100;
+    return '<div class="hbar-row"><span class="hb-num">'+String(n).padStart(2,'0')+'</span><div class="hb-track"><div class="hs25" style="width:0%" data-w="'+p25+'%">'+(f25[n]||0>0?f25[n]||0:'')+'</div><div class="hs26" style="width:0%" data-w="'+p26+'%">'+(f26[n]||0>0?f26[n]||0:'')+'</div></div><span class="hb-tot">'+cnt+'</span></div>';
+  }).join('');
+  setTimeout(animateBars,200);
+}
+
+function animateBars(){
+  document.querySelectorAll('[data-w]').forEach(el => { el.style.width = el.dataset.w; });
+}
+
+function renderHistorial(){
+  const byDate = {};
+  draws.forEach(d => {
+    if(!byDate[d.fecha]) byDate[d.fecha]={};
+    if(!byDate[d.fecha][d.tipo]) byDate[d.fecha][d.tipo]=[];
+    byDate[d.fecha][d.tipo].push(d);
+  });
+  const dates = Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
+  document.getElementById('histCount').textContent = draws.length;
+  const div = document.getElementById('histList');
+  div.innerHTML = dates.map(fecha => {
+    return Object.entries(byDate[fecha]).map(([tipo,ds]) => {
+      const nums = ds.sort((a,b)=>a.pos.localeCompare(b.pos)).map(d => {
+        const isPersonal = personalNums.some(p=>p.num===d.num);
+        return `<div class="rnum ${isPersonal?'pmatch':''}" title="${d.pos}">${String(d.num).padStart(2,'0')}</div>`;
+      }).join('');
+      const cls = tipo==='Chances'?'rt-chances':'rt-loto';
+      return `<div class="result-row">
+        <div class="result-date">${fecha}</div>
+        <div class="result-type ${cls}">${tipo}</div>
+        <div class="result-nums">${nums}</div>
+      </div>`;
+    }).join('');
+  }).join('');
+}
+
+function renderPersonalTab(){
+  const grid = document.getElementById('pnGrid');
+  grid.innerHTML = personalNums.map((p,i) =>
+    `<div class="pn-chip">${String(p.num).padStart(2,'0')} — ${p.desc}
+    <button onclick="removePersonal(${i})">&#215;</button></div>`
+  ).join('');
+  document.getElementById('pnNote').textContent = personalNums.length ? `${personalNums.length} numero(s) guardado(s)` : 'No hay numeros personales aun.';
+
+  // Analysis
+  const {fall,f25,f26} = computeFreq();
+  const analysis = document.getElementById('personalAnalysis');
+  if(!personalNums.length){ analysis.innerHTML = '<div style="color:var(--text2);font-family:DM Mono,monospace;font-size:12px">Agrega numeros personales para ver el analisis.</div>'; return; }
+  analysis.innerHTML = personalNums.map(p => {
+    const n = p.num;
+    const t = fall[n]||0;
+    const y25 = f25[n]||0;
+    const y26 = f26[n]||0;
+    const trend = y26 > y25 ? 'SUBIENDO' : y26 < y25 ? 'BAJANDO' : 'ESTABLE';
+    const trendColor = y26>y25?'var(--green)':y26<y25?'var(--red)':'var(--text2)';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(30,34,64,.5)">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:var(--blue);width:44px;flex-shrink:0">${String(n).padStart(2,'0')}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text);margin-bottom:3px">${p.desc}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text2)">2025: ${y25}x &nbsp;|&nbsp; 2026: ${y26}x &nbsp;|&nbsp; Total: <strong style="color:var(--text)">${t}</strong></div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:${trendColor};text-align:right">${trend}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAdminTab(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  const div = document.getElementById('adminUserList');
+  div.innerHTML = Object.entries(USERS).map(([u,d])=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(30,34,64,.5);font-family:'DM Mono',monospace;font-size:12px">
+      <div style="color:var(--gold);width:100px">${u}</div>
+      <div style="color:var(--text2);flex:1">${d.pass}</div>
+      <div style="font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:4px;${d.role==='admin'?'background:rgba(245,200,66,.15);color:var(--gold)':'background:rgba(74,158,255,.15);color:var(--blue)'}">${d.role}</div>
+      ${u!==currentUser.username?`<button style="background:none;border:1px solid rgba(255,77,109,.3);border-radius:6px;padding:4px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--red);cursor:pointer" onclick="adminDelUser('${u}')">BORRAR</button>`:'<span style="color:var(--muted);font-size:10px">(tu)</span>'}
+    </div>`).join('');
+}
+
+// ── PERSONAL NUMBER OPS ──
+function addPersonalNum(){
+  const n = parseInt(document.getElementById('pn-num').value);
+  const desc = document.getElementById('pn-desc').value.trim() || 'Sin descripcion';
+  if(isNaN(n)||n<0||n>99){ alert('Numero invalido (0-99)'); return; }
+  if(personalNums.some(p=>p.num===n)){ alert('Ese numero ya esta guardado'); return; }
+  personalNums.push({num:n,desc});
+  savePersonal();
+  document.getElementById('pn-num').value='';
+  document.getElementById('pn-desc').value='';
+  renderPersonalTab();
+  renderStats();
+  renderDashboard();
+}
+function removePersonal(i){
+  personalNums.splice(i,1);
+  savePersonal();
+  renderPersonalTab();
+  renderStats();
+  renderDashboard();
+}
+
+// ── BIRTHDAY EXTRACTOR ──
+function extractFromBday(){
+  const val = document.getElementById('bdate').value;
+  if(!val){ return; }
+  const d = new Date(val);
+  const day = d.getUTCDate();
+  const month = d.getUTCMonth()+1;
+  const year = d.getUTCFullYear();
+  const yy = year % 100;
+  const candidates = [...new Set([
+    day, month, yy,
+    (day+month)%100,
+    parseInt(String(day).padStart(2,'0').split('').reverse().join('')),
+    (day*month)%100,
+    Math.abs(day-month),
+  ])].filter(n=>n>=0&&n<=99);
+  const {fall} = computeFreq();
+  document.getElementById('bdayResult').innerHTML = `
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">NUMEROS DERIVADOS DE ${val}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      ${candidates.map(n=>`<div style="background:rgba(74,158,255,.1);border:1px solid rgba(74,158,255,.3);border-radius:8px;padding:10px 14px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--blue)">${String(n).padStart(2,'0')}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text2)">${fall[n]||0}x historial</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+// ── MANUAL RESULT ──
+function addManualResult(){
+  const fecha = document.getElementById('m-fecha').value;
+  const tipo = document.getElementById('m-tipo').value;
+  const pos = document.getElementById('m-pos').value;
+  const num = parseInt(document.getElementById('m-num').value);
+  const serie = document.getElementById('m-serie').value.trim();
+  const notify = document.getElementById('manualNotify');
+  if(!fecha||isNaN(num)||num<0||num>99){
+    notify.textContent='Completa la fecha y el numero (0-99).'; notify.className='notify bad'; notify.style.display='block'; return;
+  }
+  draws.push({fecha,tipo,pos,num,serie});
+  saveDraws();
+  renderDashboard();
+  renderHistorial();
+  renderStats();
+  document.getElementById('m-num').value='';
+  document.getElementById('m-serie').value='';
+  notify.textContent='Resultado guardado correctamente.'; notify.className='notify ok'; notify.style.display='block';
+  setTimeout(()=>notify.style.display='none',3000);
+}
+
+// ── FETCH FROM JPS (via proxy site) ──
+async function fetchLatest(){
+  const btn = document.getElementById('fetchBtnTxt');
+  const spin = document.getElementById('fetchSpin');
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusTxt');
+  btn.textContent = 'Consultando...';
+  spin.style.display = 'block';
+  dot.className = 'status-dot old';
+  txt.textContent = 'Conectando con fuente de datos...';
+  try {
+    // Use the Anthropic API to fetch + parse the latest JPS results via web search
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:'Busca los ultimos resultados de Chances y Loteria Nacional de Costa Rica JPS de hoy o esta semana en jpsloteria.com. Dame SOLO un JSON array con los resultados encontrados. Cada elemento debe tener: fecha (YYYY-MM-DD), tipo (Chances o Loteria), pos (1er/2do/3ero), num (numero entero 0-99). Solo el JSON, sin texto adicional.'}]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content.map(i=>i.text||'').filter(Boolean).join('\n');
+    const match = text.match(/\[[\s\S]*\]/);
+    if(match){
+      const fresh = JSON.parse(match[0]);
+      let added = 0;
+      fresh.forEach(r => {
+        const exists = draws.some(d=>d.fecha===r.fecha&&d.tipo===r.tipo&&d.pos===r.pos&&d.num===r.num);
+        if(!exists && r.fecha && r.num>=0 && r.num<=99){
+          draws.push({fecha:r.fecha,tipo:r.tipo,pos:r.pos||'1er',num:parseInt(r.num),serie:r.serie||''});
+          added++;
+        }
+      });
+      saveDraws();
+      renderDashboard();
+      renderHistorial();
+      renderStats();
+      dot.className='status-dot';
+      txt.textContent = added > 0 ? `${added} resultado(s) nuevo(s) agregado(s)` : 'Ya tienes los datos mas recientes';
+    } else {
+      throw new Error('No se pudo parsear respuesta');
+    }
+  } catch(e) {
+    dot.className='status-dot err';
+    txt.textContent = 'No se pudo conectar — ingresa resultados manualmente';
+  }
+  btn.textContent = 'Actualizar desde JPS';
+  spin.style.display = 'none';
+}
+
+// ── ADMIN OPS ──
+function adminAddUser(){
+  const u = document.getElementById('nu-user').value.trim().toLowerCase();
+  const p = document.getElementById('nu-pass').value.trim();
+  const n = document.getElementById('adminNotify');
+  if(!u||!p){ n.textContent='Completa usuario y contrasena.'; n.className='notify bad'; n.style.display='block'; return; }
+  if(USERS[u]){ n.textContent=`El usuario "${u}" ya existe.`; n.className='notify bad'; n.style.display='block'; return; }
+  USERS[u]={pass:p,role:'viewer'};
+  saveUsers();
+  renderAdminTab();
+  document.getElementById('nu-user').value='';
+  document.getElementById('nu-pass').value='';
+  n.textContent=`Usuario "${u}" creado.`; n.className='notify ok'; n.style.display='block';
+  setTimeout(()=>n.style.display='none',3000);
+}
+function adminDelUser(u){
+  if(!confirm(`Eliminar usuario "${u}"?`)) return;
+  delete USERS[u]; saveUsers(); renderAdminTab();
+}
+
+// ══════════════════════════════════════════════════
+// AI AGENT
+// ══════════════════════════════════════════════════
+function quickQ(q){
+  document.getElementById('agentInput').value = q;
+  sendToAgent();
+}
+
+async function sendToAgent(){
+  const input = document.getElementById('agentInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  appendMsg('user', msg);
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('typingIndicator').style.display = 'flex';
+
+  // Build context from data
+  const {f25,f26,fall} = computeFreq();
+  const hot = Object.entries(fall).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
+  const rising = Object.entries(f26).filter(([n])=>(f26[n]||0)>(f25[n]||0)).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>`${String(n).padStart(2,'0')}(26:${c},25:${f25[n]||0})`).join(', ');
+  const cold = Object.entries(fall).sort((a,b)=>a[1]-b[1]).slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
+  const pList = personalNums.map(p=>`${String(p.num).padStart(2,'0')} (${p.desc}, historial: ${fall[p.num]||0}x)`).join(', ');
+  const totalSorteos = [...new Set(draws.map(d=>d.fecha))].length;
+  const lastDraws = [...draws].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,12)
+    .map(d=>`${d.fecha} ${d.tipo} ${d.pos}: ${String(d.num).padStart(2,'0')}`).join('\n');
+
+  const systemPrompt = `Eres un agente experto en analisis de loteria de Costa Rica (JPS Chances y Loteria Nacional).
+Tienes acceso al historial completo del usuario.
+
+DATOS DEL HISTORIAL:
+- Total sorteos: ${totalSorteos}
+- Numeros calientes (mas frecuentes): ${hot}
+- Numeros en tendencia ascendente 2026: ${rising}
+- Numeros frios (menos frecuentes): ${cold}
+- Numeros personales del usuario: ${pList || 'ninguno'}
+
+ULTIMOS SORTEOS:
+${lastDraws}
+
+INSTRUCCIONES:
+- Responde en espanol, de forma clara y util
+- Usa los datos reales del historial en tus respuestas
+- Se especifico con numeros y estadisticas
+- Cuando des recomendaciones, basalas en los datos
+- Recuerda que la loteria es aleatoria — siempre menciona eso con honestidad
+- Respuestas concisas, maximo 200 palabras`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        system: systemPrompt,
+        messages:[{role:'user',content:msg}]
+      })
+    });
+    const data = await resp.json();
+    const reply = data.content?.map(c=>c.text||'').join('') || 'No se pudo obtener respuesta.';
+    appendMsg('agent', reply);
+  } catch(e){
+    appendMsg('agent','Error de conexion. Verifica tu internet e intenta de nuevo.');
+  }
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('typingIndicator').style.display = 'none';
+}
+
+function appendMsg(role, text){
+  const win = document.getElementById('agentWindow');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-label">${role==='user'?'TU':'AGENTE IA'}</div><div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp = document.getElementById('agentInput');
+  if(inp) inp.addEventListener('keydown', e => {
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendToAgent(); }
+  });
+});
+</script>
+</body>
+</html>
