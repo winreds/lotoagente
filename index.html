@@ -482,7 +482,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v10_aguizotes_fix';
+const DATA_VERSION = 'v12_rank2026';
 // On every version change: wipe draws so hardcoded data reloads fresh
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   localStorage.removeItem('la_draws');
@@ -682,6 +682,7 @@ function showTab(name, btn){
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='estadisticas'||name==='dashboard') setTimeout(animateBars, 100);
+  if(name==='aguizotes') renderAguizotes();
 }
 
 // ══════════════════════════════════════════════════
@@ -738,6 +739,7 @@ function getRising(){
 // AGÜIZOTES
 // ══════════════════════════════════════════════════
 function renderAguizotes(){
+  if(typeof personalNums === 'undefined') return;
   const {fall, f25, f26} = computeFreq();
 
   // Verificacion de Enero: buscar sorteos de enero y contar 78 y 29
@@ -845,13 +847,16 @@ function renderStats(){
   const maxVal = Math.max(...Object.values(fall),1);
   const total26Draws = [...new Set(draws.filter(d=>d.fecha.startsWith('2026')).map(d=>d.fecha))].length;
 
-  // ── RANKING TABLE ──
+  // ── RANKING TABLE (2026 only) ──
   const rankEl = document.getElementById('rankingTable');
   const rankSub = document.getElementById('rankingSubtitle');
-  if(rankSub) rankSub.textContent = total26Draws+' sorteos en 2026 — '+Object.keys(fall).length+' numeros distintos';
+  // Sort by 2026 frequency for the ranking display
+  const sorted26 = Object.keys(f26).map(Number).sort((a,b)=>(f26[b]-f26[a])||(a-b));
+  const max26 = Math.max(...Object.values(f26), 1);
+  if(rankSub) rankSub.textContent = total26Draws+' sorteos 2026 — '+sorted26.length+' numeros distintos';
 
   const groups = {};
-  sortedByFreq.forEach(n=>{ const c=fall[n]; if(!groups[c]) groups[c]=[]; groups[c].push(n); });
+  sorted26.forEach(n=>{ const c=f26[n]; if(!groups[c]) groups[c]=[]; groups[c].push(n); });
   const freqLevels = Object.keys(groups).map(Number).sort((a,b)=>b-a);
   const medalColors=['#f5c842','#b0bec5','#cd7f32'];
   const medalLabels=['ORO','PLATA','BRONCE'];
@@ -860,7 +865,7 @@ function renderStats(){
     const nums=groups[freq];
     const isP=n=>personalNums.some(p=>p.num===n);
     const medal=gi<3?'<span style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;padding:2px 7px;border-radius:3px;background:'+medalColors[gi]+'22;color:'+medalColors[gi]+';margin-right:8px">'+medalLabels[gi]+'</span>':'';
-    const barPct=Math.round((freq/maxVal)*100);
+    const barPct=Math.round((freq/max26)*100);
     const numColor=freq>=3?'var(--gold)':freq>=2?'var(--blue)':'var(--muted)';
     return '<div style="display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid rgba(30,34,64,.5)">'+
       '<div style="width:32px;font-family:Bebas Neue,sans-serif;font-size:22px;color:'+numColor+';text-align:center;flex-shrink:0">'+freq+'x</div>'+
