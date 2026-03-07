@@ -234,11 +234,16 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div id="dashInsights"></div>
       <div class="box" style="margin-top:14px">
         <div class="box-title">Ultimos Resultados JPS</div>
-        <div class="box-sub">Chances & Loteria Nacional — actualizados</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="update-btn" onclick="fetchLatest()" style="margin-bottom:0">
-          <div class="spin" id="fetchSpin"></div>
-          <span id="fetchBtnTxt">Actualizar desde JPS</span>
-        </button>
+        <div class="box-sub">Chances &amp; Loteria Nacional — actualizados</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <button class="update-btn" onclick="fetchLatest()" style="margin-bottom:0">
+            <div class="spin" id="fetchSpin"></div>
+            <span id="fetchBtnTxt">Actualizar desde JPS</span>
+          </button>
+          <button class="update-btn" onclick="resetToDefault()" style="margin-bottom:0;border-color:rgba(255,77,109,.3);color:var(--red)">
+            &#8635; Recargar datos base
+          </button>
+        </div>
         <div class="status-bar"><span class="status-dot" id="statusDot"></span><span id="statusTxt">Listo</span></div>
         <div id="latestResults"></div>
       </div>
@@ -394,6 +399,16 @@ const LS = {
   get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
 };
+
+
+// ══════════════════════════════════════════════════
+// DATA VERSION — bump to force localStorage reset
+// ══════════════════════════════════════════════════
+const DATA_VERSION = 'v3_28sorteos_2026';
+if(localStorage.getItem('la_data_version') !== DATA_VERSION){
+  localStorage.removeItem('la_draws');
+  localStorage.setItem('la_data_version', DATA_VERSION);
+}
 
 // ══════════════════════════════════════════════════
 // USERS
