@@ -527,7 +527,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v14_2025tab_final';
+const DATA_VERSION = 'v15_local_agent';
 // Clear ALL app data on version change to avoid stale cache issues
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   const keysToRemove = [];
@@ -1439,14 +1439,14 @@ function adminDelUser(u){
 }
 
 // ══════════════════════════════════════════════════
-// AI AGENT
+// AGENTE IA — ANALISIS LOCAL (sin API)
 // ══════════════════════════════════════════════════
 function quickQ(q){
   document.getElementById('agentInput').value = q;
   sendToAgent();
 }
 
-async function sendToAgent(){
+function sendToAgent(){
   const input = document.getElementById('agentInput');
   const msg = input.value.trim();
   if(!msg) return;
@@ -1454,57 +1454,150 @@ async function sendToAgent(){
   appendMsg('user', msg);
   document.getElementById('sendBtn').disabled = true;
   document.getElementById('typingIndicator').style.display = 'flex';
-
-  // Build context from data
-  const {f25,f26,fall} = computeFreq();
-  const hot = Object.entries(fall).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
-  const rising = Object.entries(f26).filter(([n])=>(f26[n]||0)>(f25[n]||0)).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>`${String(n).padStart(2,'0')}(26:${c},25:${f25[n]||0})`).join(', ');
-  const cold = Object.entries(fall).sort((a,b)=>a[1]-b[1]).slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
-  const pList = personalNums.map(p=>`${String(p.num).padStart(2,'0')} (${p.desc}, historial: ${fall[p.num]||0}x)`).join(', ');
-  const totalSorteos = [...new Set(draws.map(d=>d.fecha))].length;
-  const lastDraws = [...draws].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,12)
-    .map(d=>`${d.fecha} ${d.tipo} ${d.pos}: ${String(d.num).padStart(2,'0')}`).join('\n');
-
-  const systemPrompt = `Eres un agente experto en analisis de loteria de Costa Rica (JPS Chances y Loteria Nacional).
-Tienes acceso al historial completo del usuario.
-
-DATOS DEL HISTORIAL:
-- Total sorteos: ${totalSorteos}
-- Numeros calientes (mas frecuentes): ${hot}
-- Numeros en tendencia ascendente 2026: ${rising}
-- Numeros frios (menos frecuentes): ${cold}
-- Numeros personales del usuario: ${pList || 'ninguno'}
-
-ULTIMOS SORTEOS:
-${lastDraws}
-
-INSTRUCCIONES:
-- Responde en espanol, de forma clara y util
-- Usa los datos reales del historial en tus respuestas
-- Se especifico con numeros y estadisticas
-- Cuando des recomendaciones, basalas en los datos
-- Recuerda que la loteria es aleatoria — siempre menciona eso con honestidad
-- Respuestas concisas, maximo 200 palabras`;
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:400,
-        system: systemPrompt,
-        messages:[{role:'user',content:msg}]
-      })
-    });
-    const data = await resp.json();
-    const reply = data.content?.map(c=>c.text||'').join('') || 'No se pudo obtener respuesta.';
+  setTimeout(() => {
+    const reply = analyzeLocal(msg.toLowerCase());
     appendMsg('agent', reply);
-  } catch(e){
-    appendMsg('agent','Error de conexion. Verifica tu internet e intenta de nuevo.');
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('typingIndicator').style.display = 'none';
+  }, 600);
+}
+
+function analyzeLocal(q){
+  const {f25, f26, fall} = computeFreq();
+  const totalSorteos = [...new Set(draws.map(d=>d.fecha))].length;
+  const total25 = [...new Set(draws.filter(d=>d.fecha.startsWith('2025')).map(d=>d.fecha))].length;
+  const total26 = [...new Set(draws.filter(d=>d.fecha.startsWith('2026')).map(d=>d.fecha))].length;
+
+  // Top / bottom lists
+  const sorted26 = Object.entries(f26).sort((a,b)=>b[1]-a[1]);
+  const sorted25 = Object.entries(f25).sort((a,b)=>b[1]-a[1]);
+  const sortedAll = Object.entries(fall).sort((a,b)=>b[1]-a[1]);
+
+  const top5_26 = sorted26.slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')} (${c}x)`).join(', ');
+  const top5_25 = sorted25.slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')} (${c}x)`).join(', ');
+  const top10_all = sortedAll.slice(0,10).map(([n,c])=>`${String(n).padStart(2,'0')} (${c}x)`).join(', ');
+  const cold26 = Object.keys(fall).map(Number).filter(n=>!(n in f26)).slice(0,8).map(n=>String(n).padStart(2,'0')).join(', ');
+  const rising = Object.keys(f26).map(Number)
+    .filter(n => (f26[n]||0) >= 2)
+    .sort((a,b)=>(f26[b]-f26[a]))
+    .slice(0,6).map(n=>`${String(n).padStart(2,'0')} (26:${f26[n]}x, 25:${f25[n]||0}x)`).join(', ');
+
+  // Frecuencia por posicion
+  const byPos = {_1er:{}, _2do:{}, _3ero:{}};
+  draws.forEach(d=>{
+    const k = '_'+d.pos;
+    if(byPos[k]) byPos[k][d.num]=(byPos[k][d.num]||0)+1;
+  });
+  const top_1er = Object.entries(byPos._1er).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
+  const top_2do = Object.entries(byPos._2do).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
+  const top_3ero = Object.entries(byPos._3ero).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([n,c])=>`${String(n).padStart(2,'0')}(${c}x)`).join(', ');
+
+  // Personal nums analysis
+  const pAnalysis = personalNums.length > 0
+    ? personalNums.map(p=>{
+        const t=fall[p.num]||0, t26=f26[p.num]||0, t25=f25[p.num]||0;
+        const status = t26>=3?'🔥 CALIENTE':t26>=2?'📈 ACTIVO':t26===1?'😐 TIBIO':'❄️ FRIO en 2026';
+        return `• ${String(p.num).padStart(2,'0')} (${p.desc}): ${t}x total, ${t25}x en 2025, ${t26}x en 2026 — ${status}`;
+      }).join('\n')
+    : '(No tienes numeros personales guardados en Mis Numeros)';
+
+  // Aguizotes check
+  const ag78_26 = f26[78]||0; const ag29_26 = f26[29]||0;
+  const ag_enero = draws.filter(d=>d.fecha.match(/-01-/));
+  const ag78_en = ag_enero.filter(d=>d.num===78).length;
+  const ag29_en = ag_enero.filter(d=>d.num===29).length;
+  const mama_stats = [0,4,41].map(n=>`${String(n).padStart(2,'0')}:${fall[n]||0}x`).join(', ');
+
+  // Last sorteo
+  const lastDate = draws.map(d=>d.fecha).sort().reverse()[0];
+  const lastNums = draws.filter(d=>d.fecha===lastDate).sort((a,b)=>a.pos.localeCompare(b.pos));
+  const lastStr = lastNums.map(d=>`${d.pos}: ${String(d.num).padStart(2,'0')}`).join(', ');
+  const lastTipo = lastNums[0]?.tipo || '';
+
+  // ── Route by keyword ──
+  if(q.includes('caliente') || q.includes('mas frecuente') || q.includes('mas sale') || q.includes('mas veces')){
+    return `🔥 NUMEROS MAS CALIENTES\n\n` +
+      `2026 (${total26} sorteos):\n${top5_26}\n\n` +
+      `2025 (${total25} sorteos):\n${top5_25}\n\n` +
+      `Historico completo (${totalSorteos} sorteos):\n${top10_all}\n\n` +
+      `⚠️ Recuerda: la lotería es aleatoria. Estos datos son solo para referencia.`;
   }
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('typingIndicator').style.display = 'none';
+
+  if(q.includes('frio') || q.includes('no sale') || q.includes('ausente') || q.includes('no ha salido')){
+    return `❄️ NUMEROS FRIOS EN 2026\n\nEstos numeros no han aparecido en ninguno de los ${total26} sorteos de 2026:\n${cold26 || 'Ninguno — todos han salido al menos 1 vez'}\n\n` +
+      `Los 5 menos frecuentes en el historico total:\n` +
+      sortedAll.slice(-5).reverse().map(([n,c])=>`${String(n).padStart(2,'0')} (${c}x)`).join(', ') +
+      `\n\n⚠️ Que un numero no haya salido no significa que saldrá pronto — cada sorteo es independiente.`;
+  }
+
+  if(q.includes('tendencia') || q.includes('subiendo') || q.includes('ascendente') || q.includes('activo')){
+    return `📈 NUMEROS EN TENDENCIA ASCENDENTE 2026\n\nEstos numeros tienen mas apariciones en 2026 que en 2025 (minimo 2x en 2026):\n\n${rising || 'Sin tendencias claras aun — pocos sorteos en 2026'}\n\n` +
+      `El mas activo de 2026: ${sorted26[0]?String(sorted26[0][0]).padStart(2,'0')+' con '+sorted26[0][1]+'x':'—'}\n\n` +
+      `⚠️ Las tendencias pasadas no garantizan resultados futuros.`;
+  }
+
+  if(q.includes('personal') || q.includes('mis numero') || q.includes('mis num')){
+    return `👤 TUS NUMEROS PERSONALES vs HISTORIAL\n\n${pAnalysis}\n\n` +
+      `Tienes ${personalNums.length} numero${personalNums.length!==1?'s':''} guardado${personalNums.length!==1?'s':''}.`;
+  }
+
+  if(q.includes('estrategia') || q.includes('recomienda') || q.includes('sugerencia') || q.includes('jugar')){
+    const best26 = sorted26.slice(0,3).map(([n])=>String(n).padStart(2,'0')).join(', ');
+    const risingNums = Object.keys(f26).map(Number).filter(n=>(f26[n]||0)>=(f25[n]||0)+1).sort((a,b)=>f26[b]-f26[a]).slice(0,3).map(n=>String(n).padStart(2,'0')).join(', ');
+    return `📊 ESTRATEGIA BASADA EN DATOS\n\n` +
+      `Basado en ${totalSorteos} sorteos del historial:\n\n` +
+      `🔥 Mas frecuentes 2026: ${best26}\n` +
+      `📈 Subiendo en 2026: ${risingNums||'Datos insuficientes'}\n` +
+      `❄️ Ausentes en 2026: ${cold26.split(', ').slice(0,4).join(', ')}\n\n` +
+      `Agüizotes a considerar:\n` +
+      `• Enero: 78 (${ag78_en}x en sorteos de enero), 29 (${ag29_en}x)\n` +
+      `• Mama: 00, 04, 41 → historial: ${mama_stats}\n\n` +
+      `⚠️ IMPORTANTE: La loteria es completamente aleatoria. No existe estrategia que garantice ganar. Juega con responsabilidad.`;
+  }
+
+  if(q.includes('posicion') || q.includes('primer') || q.includes('segundo') || q.includes('tercer') || q.includes('1er') || q.includes('2do') || q.includes('3ero')){
+    return `📍 NUMEROS MAS FRECUENTES POR POSICION\n\n` +
+      `🥇 Primer lugar (1er):\n${top_1er}\n\n` +
+      `🥈 Segundo lugar (2do):\n${top_2do}\n\n` +
+      `🥉 Tercer lugar (3ero):\n${top_3ero}\n\n` +
+      `Basado en ${totalSorteos} sorteos totales.`;
+  }
+
+  if(q.includes('ultimo') || q.includes('reciente') || q.includes('hoy') || q.includes('ultimo sorteo')){
+    return `📅 ULTIMO SORTEO REGISTRADO\n\nFecha: ${lastDate}\nTipo: ${lastTipo}\n${lastStr}\n\nPara agregar sorteos nuevos, usa la seccion "Resultados" → Ingresar Resultado Manual.`;
+  }
+
+  if(q.includes('aguizote') || q.includes('enero') || q.includes('semana santa') || q.includes('mama')){
+    return `🎰 AGUIZOTES — VERIFICACION HISTORICA\n\n` +
+      `📅 Enero (78 y 29):\n` +
+      `• 78: ${ag78_en}x en sorteos de enero, ${ag78_26}x en 2026 total\n` +
+      `• 29: ${ag29_en}x en sorteos de enero, ${ag29_26}x en 2026 total\n\n` +
+      `✝️ Semana Santa (33): ${fall[33]||0}x en historial total\n\n` +
+      `❤️ Mama (00, 04, 41):\n${mama_stats}\n\n` +
+      `Revisa el tab Agüizotes para ver el detalle completo.`;
+  }
+
+  if(q.includes('cuantos') || q.includes('total') || q.includes('resumen') || q.includes('estadistica general')){
+    return `📊 RESUMEN GENERAL\n\n` +
+      `• Total sorteos: ${totalSorteos} (${total25} en 2025, ${total26} en 2026)\n` +
+      `• Total numeros registrados: ${Object.values(fall).reduce((a,b)=>a+b,0)}\n` +
+      `• Numeros distintos en historial: ${Object.keys(fall).length}\n` +
+      `• Numero mas frecuente: ${String(sortedAll[0][0]).padStart(2,'0')} con ${sortedAll[0][1]}x\n` +
+      `• Ultimo sorteo: ${lastDate} — ${lastStr}\n` +
+      `• Numeros personales guardados: ${personalNums.length}`;
+  }
+
+  // Default: general analysis
+  return `🤖 ANALISIS GENERAL\n\n` +
+    `No reconoci una pregunta especifica, pero aqui tienes el resumen:\n\n` +
+    `🔥 Top 5 en 2026: ${top5_26}\n` +
+    `📈 En tendencia: ${rising.split(',').slice(0,3).join(',') || 'Calculando...'}\n` +
+    `❄️ Frios en 2026: ${cold26.split(',').slice(0,5).join(',')}\n\n` +
+    `Puedes preguntarme sobre:\n` +
+    `• "numeros calientes" · "numeros frios"\n` +
+    `• "tendencias 2026" · "estrategia"\n` +
+    `• "mis numeros" · "por posicion"\n` +
+    `• "ultimo sorteo" · "aguizotes"`;
 }
 
 function appendMsg(role, text){
