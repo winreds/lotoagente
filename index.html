@@ -197,7 +197,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div class="login-logo">LotoAgente</div>
     <div class="login-sub">CR &nbsp;&#9670;&nbsp; JPS CHANCES &amp; LOTERIA</div>
     <div class="fl"><label>Usuario</label><input type="text" id="lu" class="fi" placeholder="usuario" autocapitalize="none" autocomplete="username"></div>
-    <div class="fl"><label>Contrasena</label><input type="password" id="lp" class="fi" placeholder="contrasena" autocomplete="current-password"></div>
+    <div class="fl"><label>Contrasena</label>
+        <div style="position:relative">
+          <input type="password" id="lp" class="fi" placeholder="contrasena" autocomplete="current-password" autocorrect="off" autocapitalize="none" spellcheck="false" style="padding-right:44px">
+          <button type="button" onclick="togglePass()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);cursor:pointer;font-size:13px;padding:4px" id="togglePassBtn">SHOW</button>
+        </div></div>
     <button class="login-btn" onclick="doLogin()">ENTRAR</button>
     <div id="lerr" class="err-msg">Usuario o contrasena incorrectos.</div>
   </div>
@@ -378,7 +382,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
           <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">USUARIO</label>
           <input type="text" id="nu-user" class="form-inp" style="margin:0" placeholder="nombre" autocapitalize="none"></div>
           <div><label style="font-size:10px;letter-spacing:2px;color:var(--text2);font-family:'DM Mono',monospace;display:block;margin-bottom:5px">CONTRASENA</label>
-          <input type="text" id="nu-pass" class="form-inp" style="margin:0" placeholder="clave"></div>
+          <input type="text" id="nu-pass" class="form-inp" style="margin:0" placeholder="clave" autocorrect="off" autocapitalize="none" spellcheck="false"></div>
           <button class="btn-gold" onclick="adminAddUser()" style="padding:10px 14px;font-size:14px">CREAR</button>
         </div>
         <div id="adminNotify" class="notify"></div>
@@ -404,7 +408,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v3_28sorteos_2026';
+const DATA_VERSION = 'v4_login_fix';
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   localStorage.removeItem('la_draws');
   localStorage.setItem('la_data_version', DATA_VERSION);
@@ -422,9 +426,16 @@ function saveUsers(){ LS.set('la_users', USERS); }
 
 let currentUser = null;
 
+function togglePass(){
+  const f = document.getElementById('lp');
+  const b = document.getElementById('togglePassBtn');
+  if(f.type === 'password'){ f.type = 'text'; b.textContent = 'HIDE'; }
+  else { f.type = 'password'; b.textContent = 'SHOW'; }
+}
+
 function doLogin(){
   const u = document.getElementById('lu').value.trim().toLowerCase();
-  const p = document.getElementById('lp').value;
+  const p = document.getElementById('lp').value.trim();
   if(USERS[u] && USERS[u].pass === p){
     currentUser = { username: u, role: USERS[u].role };
     document.getElementById('loginScreen').style.display = 'none';
@@ -1022,3 +1033,4 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
+
