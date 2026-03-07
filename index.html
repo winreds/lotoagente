@@ -220,6 +220,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="nav-tab active" onclick="showTab('dashboard',this)">Dashboard</button>
     <button class="nav-tab" onclick="showTab('resultados',this)">Resultados</button>
     <button class="nav-tab" onclick="showTab('estadisticas',this)">Estadisticas</button>
+    <button class="nav-tab" onclick="showTab('aguizotes',this)">Agüizotes</button>
     <button class="nav-tab admin-only" onclick="showTab('personales',this)" style="display:none">Mis Numeros</button>
     <button class="nav-tab admin-only" onclick="showTab('agente',this)" style="display:none">Agente IA</button>
     <button class="nav-tab admin-only" onclick="showTab('admin',this)" style="display:none">Admin</button>
@@ -400,6 +401,86 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
         <div class="box-title">Lista de Usuarios</div>
         <div id="adminUserList" style="margin-top:10px"></div>
       </div>
+
+    <!-- AGÜIZOTES -->
+    <div id="tab-aguizotes" class="tab-panel">
+      <div class="sec-hdr">
+        <h2>Agüizotes</h2>
+        <p>Patrones, creencias y numeros de confianza — la sabiduria popular</p>
+      </div>
+
+      <!-- ENERO -->
+      <div class="box" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.3);display:flex;align-items:center;justify-content:center;font-size:22px">📅</div>
+          <div>
+            <div class="box-title" style="margin:0">Enero</div>
+            <div class="box-sub" style="margin:0">Siempre salen estos numeros en enero</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:64px;height:64px;border-radius:14px;background:rgba(74,158,255,.12);border:2px solid rgba(74,158,255,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);letter-spacing:2px">78</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text2)">ENERO</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:64px;height:64px;border-radius:14px;background:rgba(74,158,255,.12);border:2px solid rgba(74,158,255,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);letter-spacing:2px">29</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text2)">ENERO</div>
+          </div>
+        </div>
+        <div id="enero-verificacion" style="margin-top:14px"></div>
+      </div>
+
+      <!-- SEMANA SANTA -->
+      <div class="box" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);display:flex;align-items:center;justify-content:center;font-size:22px">✝️</div>
+          <div>
+            <div class="box-title" style="margin:0">Semana Santa</div>
+            <div class="box-sub" style="margin:0">El numero de la Semana Santa</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:64px;height:64px;border-radius:14px;background:rgba(245,200,66,.1);border:2px solid rgba(245,200,66,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:2px">33</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text2)">S. SANTA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAMA -->
+      <div class="box" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.25);display:flex;align-items:center;justify-content:center;font-size:22px">❤️</div>
+          <div>
+            <div class="box-title" style="margin:0">Mama</div>
+            <div class="box-sub" style="margin:0">Los numeros de mama — siempre de confianza</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:64px;height:64px;border-radius:14px;background:rgba(255,77,109,.1);border:2px solid rgba(255,77,109,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);letter-spacing:2px">00</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text2)">MAMA</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:64px;height:64px;border-radius:14px;background:rgba(255,77,109,.1);border:2px solid rgba(255,77,109,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);letter-spacing:2px">04</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text2)">MAMA</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:64px;height:64px;border-radius:14px;background:rgba(255,77,109,.1);border:2px solid rgba(255,77,109,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);letter-spacing:2px">41</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text2)">MAMA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VERIFICACION HISTORICA -->
+      <div class="box">
+        <div class="box-title">Verificacion Historica</div>
+        <div class="box-sub">Cuantas veces han salido estos numeros en el historial</div>
+        <div id="aguizotes-stats" style="margin-top:14px"></div>
+      </div>
+    </div>
+
     </div>
   </div>
 </div>
@@ -417,7 +498,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v8_fix306';
+const DATA_VERSION = 'v9_aguizotes';
 // On every version change: wipe draws so hardcoded data reloads fresh
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   localStorage.removeItem('la_draws');
@@ -668,12 +749,69 @@ function getRising(){
 // ══════════════════════════════════════════════════
 // INIT / RENDER
 // ══════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════
+// AGÜIZOTES
+// ══════════════════════════════════════════════════
+function renderAguizotes(){
+  const {fall, f25, f26} = computeFreq();
+
+  // Verificacion de Enero: buscar sorteos de enero y contar 78 y 29
+  const eneroDraws = draws.filter(d => d.fecha.match(/-01-/));
+  const eneroNums = eneroDraws.map(d => d.num);
+  const count78 = eneroNums.filter(n => n===78).length;
+  const count29 = eneroNums.filter(n => n===29).length;
+  const totalEneroSorteos = [...new Set(eneroDraws.map(d=>d.fecha))].length;
+
+  const eneroEl = document.getElementById('enero-verificacion');
+  if(eneroEl){
+    const make = (num, cnt) => {
+      const pct = totalEneroSorteos > 0 ? Math.round((cnt/totalEneroSorteos)*100) : 0;
+      const color = cnt>=2 ? 'var(--gold)' : cnt===1 ? 'var(--blue)' : 'var(--muted)';
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)">'
+        +'<span style="font-family:Bebas Neue,sans-serif;font-size:20px;color:'+color+';width:32px">'+String(num).padStart(2,'0')+'</span>'
+        +'<div style="flex:1"><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:3px;transition:width 1s"></div></div></div>'
+        +'<span style="font-family:DM Mono,monospace;font-size:11px;color:'+color+'">'+cnt+'x en enero ('+pct+'%)</span>'
+        +'</div>';
+    };
+    eneroEl.innerHTML = '<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;color:var(--text2);margin-bottom:6px">'+totalEneroSorteos+' SORTEOS DE ENERO EN HISTORIAL</div>'
+      + make(78, count78) + make(29, count29);
+  }
+
+  // Stats generales de todos los aguizotes
+  const aguizoteNums = [78,29,33,0,4,41];
+  const statsEl = document.getElementById('aguizotes-stats');
+  if(statsEl){
+    const rows = aguizoteNums.map(n => {
+      const total = fall[n]||0;
+      const en2025 = f25[n]||0;
+      const en2026 = f26[n]||0;
+      const eneroCount = draws.filter(d=>d.fecha.match(/-01-/) && d.num===n).length;
+      const maxV = Math.max(...aguizoteNums.map(x=>fall[x]||0),1);
+      const pct = Math.round((total/maxV)*100);
+      const label = n===78||n===29 ? 'ENERO' : n===33 ? 'S.SANTA' : 'MAMA';
+      const lcolor = n===78||n===29?'rgba(74,158,255,.8)':n===33?'rgba(245,200,66,.8)':'rgba(255,77,109,.8)';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)">'
+        +'<div style="width:42px;height:42px;border-radius:10px;background:rgba(30,34,64,.8);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:22px;color:var(--text);flex-shrink:0">'+String(n).padStart(2,'0')+'</div>'
+        +'<span style="font-family:DM Mono,monospace;font-size:8px;padding:2px 6px;border-radius:3px;background:'+lcolor.replace('.8','.15')+';color:'+lcolor+';flex-shrink:0">'+label+'</span>'
+        +'<div style="flex:1"><div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px;transition:width 1s"></div></div></div>'
+        +'<div style="text-align:right;flex-shrink:0">'
+          +'<div style="font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--text);line-height:1">'+total+'x</div>'
+          +'<div style="font-family:DM Mono,monospace;font-size:9px;color:var(--text2)">'+en2025+' en 25 · '+en2026+' en 26</div>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+    statsEl.innerHTML = rows;
+  }
+}
+
 function initApp(){
   renderDashboard();
   renderStats();
   renderHistorial();
   renderPersonalTab();
   renderAdminTab();
+  renderAguizotes();
 }
 
 function renderDashboard(){
