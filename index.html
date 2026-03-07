@@ -417,10 +417,13 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v7_ranking';
+const DATA_VERSION = 'v8_fix306';
+// On every version change: wipe draws so hardcoded data reloads fresh
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   localStorage.removeItem('la_draws');
+  localStorage.removeItem('la_data_version');
   localStorage.setItem('la_data_version', DATA_VERSION);
+  console.log('LotoAgente: datos actualizados a ' + DATA_VERSION);
 }
 
 // ══════════════════════════════════════════════════
@@ -635,7 +638,7 @@ function getType(n, f25, f26){
   const total = (f25[n]||0)+(f26[n]||0);
   const pNums = personalNums.map(p=>p.num);
   if(pNums.includes(n)) return 'personal';
-  if(total >= 7) return 'hot';
+  if(total >= 3) return 'hot';
   if((f26[n]||0) > (f25[n]||0)) return 'rising';
   if(total <= 1) return 'cold';
   return 'normal';
@@ -714,6 +717,7 @@ function renderDashboard(){
 }
 
 function renderStats(){
+  console.log('renderStats: draws count=', draws.length, 'last=', draws[draws.length-1]);
   const {f25,f26,fall} = computeFreq();
   const sortedByFreq = Object.keys(fall).map(Number).sort((a,b)=>(fall[b]-fall[a])||(a-b));
   const maxVal = Math.max(...Object.values(fall),1);
