@@ -293,20 +293,25 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
     <!-- ESTADISTICAS -->
     <div id="tab-estadisticas" class="tab-panel">
-      <div class="sec-hdr"><h2>Estadisticas</h2><p>Frecuencias, tendencias, numeros calientes y frios</p></div>
+      <div class="sec-hdr"><h2>Estadisticas</h2><p>Frecuencias, tendencias y ranking completo</p></div>
+      <div class="box" style="margin-bottom:18px">
+        <div class="box-title">Ranking — Mayor a Menor Frecuencia</div>
+        <div class="box-sub" id="rankingSubtitle">Cargando...</div>
+        <div id="rankingTable"></div>
+      </div>
+      <div class="box" style="margin-bottom:18px">
+        <div class="box-title">Frecuencia Comparativa</div>
+        <div class="box-sub">Barras ordenadas por total — azul 2025, dorado 2026</div>
+        <div id="statsHbar"></div>
+      </div>
       <div class="leg">
         <div class="leg-i"><div class="leg-d" style="background:var(--blue)"></div>2025</div>
         <div class="leg-i"><div class="leg-d" style="background:var(--gold)"></div>2026</div>
-        <div class="leg-i"><div class="leg-d" style="background:var(--gold);border-radius:50%"></div>Caliente (7+)</div>
+        <div class="leg-i"><div class="leg-d" style="background:var(--gold);border-radius:50%"></div>Caliente (3+)</div>
         <div class="leg-i"><div class="leg-d" style="background:var(--green);border-radius:50%"></div>En Subida</div>
         <div class="leg-i"><div class="leg-d" style="background:var(--blue);border-radius:50%"></div>Tu Numero</div>
       </div>
       <div class="num-grid" id="statsGrid"></div>
-      <div class="box">
-        <div class="box-title">Frecuencia Comparativa</div>
-        <div class="box-sub">Ordenado por total de apariciones</div>
-        <div id="statsHbar"></div>
-      </div>
     </div>
 
     <!-- MIS NUMEROS PERSONALES -->
@@ -412,7 +417,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v6_hardcoded_users';
+const DATA_VERSION = 'v7_ranking';
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   localStorage.removeItem('la_draws');
   localStorage.setItem('la_data_version', DATA_VERSION);
@@ -582,6 +587,9 @@ let draws = LS.get('la_draws') || [
   {fecha:'2026-03-03',tipo:'Chances',pos:'1er',num:85,serie:''},
   {fecha:'2026-03-03',tipo:'Chances',pos:'2do',num:74,serie:''},
   {fecha:'2026-03-03',tipo:'Chances',pos:'3ero',num:78,serie:''},
+  {fecha:'2026-03-06',tipo:'Chances',pos:'1er',num:51,serie:''},
+  {fecha:'2026-03-06',tipo:'Chances',pos:'2do',num:84,serie:''},
+  {fecha:'2026-03-06',tipo:'Chances',pos:'3ero',num:1,serie:''},
 ];
 function saveDraws(){ LS.set('la_draws', draws); }
 function resetToDefault(){
@@ -707,47 +715,72 @@ function renderDashboard(){
 
 function renderStats(){
   const {f25,f26,fall} = computeFreq();
-  const allNums = Object.keys(fall).map(Number).sort((a,b)=>a-b);
-  const maxVal = Math.max(...Object.values(fall), 1);
-  const grid = document.getElementById('statsGrid');
-  grid.innerHTML = '';
-  allNums.forEach((n,i) => {
-    const type = getType(n,f25,f26);
-    const p25 = Math.round(((f25[n]||0)/maxVal)*100);
-    const p26 = Math.round(((f26[n]||0)/maxVal)*100);
-    const total = fall[n]||0;
-    const card = document.createElement('div');
-    card.className = `nc ${type}`;
-    card.style.animationDelay = `${0.03*i}s`;
-    card.innerHTML = `
-      ${type!=='normal'?`<div class="ntag ${type}">${type==='hot'?'CALIENTE':type==='rising'?'SUBIENDO':type==='cold'?'FRIO':'PERSONAL'}</div>`:''}
-      <div class="nb">${String(n).padStart(2,'0')}</div>
-      <div class="bars">
-        <div class="bar-row"><span class="bar-lbl">25</span><div class="bar-track"><div class="bar-fill bf25" style="width:0%" data-w="${p25}%"></div></div><span class="bar-cnt">${f25[n]||0}</span></div>
-        <div class="bar-row"><span class="bar-lbl">26</span><div class="bar-track"><div class="bar-fill bf26" style="width:0%" data-w="${p26}%"></div></div><span class="bar-cnt">${f26[n]||0}</span></div>
-      </div>
-      <div class="tot-line"><span>TOTAL</span><span class="tot-v">${total}</span></div>
-    `;
+  const sortedByFreq = Object.keys(fall).map(Number).sort((a,b)=>(fall[b]-fall[a])||(a-b));
+  const maxVal = Math.max(...Object.values(fall),1);
+  const total26Draws = [...new Set(draws.filter(d=>d.fecha.startsWith('2026')).map(d=>d.fecha))].length;
+
+  // ── RANKING TABLE ──
+  const rankEl = document.getElementById('rankingTable');
+  const rankSub = document.getElementById('rankingSubtitle');
+  if(rankSub) rankSub.textContent = total26Draws+' sorteos en 2026 — '+Object.keys(fall).length+' numeros distintos';
+
+  const groups = {};
+  sortedByFreq.forEach(n=>{ const c=fall[n]; if(!groups[c]) groups[c]=[]; groups[c].push(n); });
+  const freqLevels = Object.keys(groups).map(Number).sort((a,b)=>b-a);
+  const medalColors=['#f5c842','#b0bec5','#cd7f32'];
+  const medalLabels=['ORO','PLATA','BRONCE'];
+
+  rankEl.innerHTML = freqLevels.map((freq,gi)=>{
+    const nums=groups[freq];
+    const isP=n=>personalNums.some(p=>p.num===n);
+    const medal=gi<3?'<span style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;padding:2px 7px;border-radius:3px;background:'+medalColors[gi]+'22;color:'+medalColors[gi]+';margin-right:8px">'+medalLabels[gi]+'</span>':'';
+    const barPct=Math.round((freq/maxVal)*100);
+    const numColor=freq>=3?'var(--gold)':freq>=2?'var(--blue)':'var(--muted)';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid rgba(30,34,64,.5)">'+
+      '<div style="width:32px;font-family:Bebas Neue,sans-serif;font-size:22px;color:'+numColor+';text-align:center;flex-shrink:0">'+freq+'x</div>'+
+      '<div style="flex:1">'+medal+
+        '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:'+(gi<3?'6px':'2px')+'">'+
+          nums.map(n=>'<div style="width:36px;height:36px;border-radius:8px;background:'+(isP(n)?'rgba(74,158,255,.15)':freq>=3?'rgba(245,200,66,.12)':freq>=2?'rgba(74,158,255,.08)':'rgba(30,34,64,.6)')+';border:1px solid '+(isP(n)?'rgba(74,158,255,.4)':freq>=3?'rgba(245,200,66,.35)':freq>=2?'rgba(74,158,255,.25)':'var(--border)')+';display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:17px;color:'+(isP(n)?'var(--blue)':freq>=3?'var(--gold)':freq>=2?'var(--blue)':'var(--text2)')+'">'+String(n).padStart(2,'0')+'</div>').join('')+
+        '</div>'+
+      '</div>'+
+      '<div style="width:70px;flex-shrink:0">'+
+        '<div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+barPct+'%;background:'+(freq>=3?'linear-gradient(90deg,var(--gold2),var(--gold))':freq>=2?'linear-gradient(90deg,var(--blue2),var(--blue))':'var(--muted)')+';border-radius:3px"></div></div>'+
+        '<div style="font-family:DM Mono,monospace;font-size:9px;color:var(--text2);margin-top:4px;text-align:right">'+nums.length+' num'+(nums.length>1?'s':'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  // ── NUMBER CARDS sorted by frequency ──
+  const grid=document.getElementById('statsGrid');
+  grid.innerHTML='';
+  sortedByFreq.forEach((n,i)=>{
+    const type=getType(n,f25,f26);
+    const p25=Math.round(((f25[n]||0)/maxVal)*100);
+    const p26=Math.round(((f26[n]||0)/maxVal)*100);
+    const total=fall[n]||0;
+    const card=document.createElement('div');
+    card.className='nc '+type;
+    card.style.animationDelay=0.02*i+'s';
+    card.innerHTML=(type!=='normal'?'<div class="ntag '+type+'">'+(type==='hot'?'CALIENTE':type==='rising'?'SUBIENDO':type==='cold'?'FRIO':'PERSONAL')+'</div>':'')+
+      '<div class="nb">'+String(n).padStart(2,'0')+'</div>'+
+      '<div class="bars">'+
+        '<div class="bar-row"><span class="bar-lbl">25</span><div class="bar-track"><div class="bar-fill bf25" style="width:0%" data-w="'+p25+'%"></div></div><span class="bar-cnt">'+(f25[n]||0)+'</span></div>'+
+        '<div class="bar-row"><span class="bar-lbl">26</span><div class="bar-track"><div class="bar-fill bf26" style="width:0%" data-w="'+p26+'%"></div></div><span class="bar-cnt">'+(f26[n]||0)+'</span></div>'+
+      '</div>'+
+      '<div class="tot-line"><span>TOTAL</span><span class="tot-v">'+total+'</span></div>';
     grid.appendChild(card);
   });
 
-  // Hbar
-  const sorted = Object.entries(fall).sort((a,b)=>b[1]-a[1]);
-  const maxT = Math.max(...sorted.map(e=>Number(e[1])),1);
-  const hbar = document.getElementById('statsHbar');
-  hbar.innerHTML = sorted.map(([n,cnt]) => {
-    const p25 = ((f25[n]||0)/(maxT*1.1))*100;
-    const p26 = ((f26[n]||0)/(maxT*1.1))*100;
-    return `<div class="hbar-row">
-      <span class="hb-num">${String(n).padStart(2,'0')}</span>
-      <div class="hb-track">
-        <div class="hs25" style="width:0%" data-w="${p25}%">${(f25[n]||0)>0?f25[n]:''}</div>
-        <div class="hs26" style="width:0%" data-w="${p26}%">${(f26[n]||0)>0?f26[n]:''}</div>
-      </div>
-      <span class="hb-tot">${cnt}</span>
-    </div>`;
+  // ── HBAR ──
+  const sortedH=Object.entries(fall).sort((a,b)=>b[1]-a[1]);
+  const maxT=Math.max(...sortedH.map(e=>Number(e[1])),1);
+  const hbar=document.getElementById('statsHbar');
+  hbar.innerHTML=sortedH.map(([n,cnt])=>{
+    const p25=((f25[n]||0)/(maxT*1.1))*100;
+    const p26=((f26[n]||0)/(maxT*1.1))*100;
+    return '<div class="hbar-row"><span class="hb-num">'+String(n).padStart(2,'0')+'</span><div class="hb-track"><div class="hs25" style="width:0%" data-w="'+p25+'%">'+(f25[n]||0>0?f25[n]||0:'')+'</div><div class="hs26" style="width:0%" data-w="'+p26+'%">'+(f26[n]||0>0?f26[n]||0:'')+'</div></div><span class="hb-tot">'+cnt+'</span></div>';
   }).join('');
-  setTimeout(animateBars, 200);
+  setTimeout(animateBars,200);
 }
 
 function animateBars(){
