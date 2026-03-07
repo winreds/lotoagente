@@ -401,6 +401,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
         <div class="box-title">Lista de Usuarios</div>
         <div id="adminUserList" style="margin-top:10px"></div>
       </div>
+    </div>
 
     <!-- AGÜIZOTES -->
     <div id="tab-aguizotes" class="tab-panel">
@@ -408,15 +409,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
         <h2>Agüizotes</h2>
         <p>Patrones, creencias y numeros de confianza — la sabiduria popular</p>
       </div>
-
-      <!-- ENERO -->
       <div class="box" style="margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
           <div style="width:44px;height:44px;border-radius:12px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.3);display:flex;align-items:center;justify-content:center;font-size:22px">📅</div>
-          <div>
-            <div class="box-title" style="margin:0">Enero</div>
-            <div class="box-sub" style="margin:0">Siempre salen estos numeros en enero</div>
-          </div>
+          <div><div class="box-title" style="margin:0">Enero</div><div class="box-sub" style="margin:0">Siempre salen estos numeros en enero</div></div>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
@@ -430,15 +426,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
         </div>
         <div id="enero-verificacion" style="margin-top:14px"></div>
       </div>
-
-      <!-- SEMANA SANTA -->
       <div class="box" style="margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
           <div style="width:44px;height:44px;border-radius:12px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);display:flex;align-items:center;justify-content:center;font-size:22px">✝️</div>
-          <div>
-            <div class="box-title" style="margin:0">Semana Santa</div>
-            <div class="box-sub" style="margin:0">El numero de la Semana Santa</div>
-          </div>
+          <div><div class="box-title" style="margin:0">Semana Santa</div><div class="box-sub" style="margin:0">El numero de la Semana Santa</div></div>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
@@ -447,15 +438,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
           </div>
         </div>
       </div>
-
-      <!-- MAMA -->
       <div class="box" style="margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
           <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.25);display:flex;align-items:center;justify-content:center;font-size:22px">❤️</div>
-          <div>
-            <div class="box-title" style="margin:0">Mama</div>
-            <div class="box-sub" style="margin:0">Los numeros de mama — siempre de confianza</div>
-          </div>
+          <div><div class="box-title" style="margin:0">Mama</div><div class="box-sub" style="margin:0">Los numeros de mama — siempre de confianza</div></div>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
@@ -472,8 +458,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
           </div>
         </div>
       </div>
-
-      <!-- VERIFICACION HISTORICA -->
       <div class="box">
         <div class="box-title">Verificacion Historica</div>
         <div class="box-sub">Cuantas veces han salido estos numeros en el historial</div>
@@ -498,7 +482,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v9_aguizotes';
+const DATA_VERSION = 'v10_aguizotes_fix';
 // On every version change: wipe draws so hardcoded data reloads fresh
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   localStorage.removeItem('la_draws');
