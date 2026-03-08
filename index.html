@@ -225,7 +225,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="nav-tab" onclick="showTab('estadisticas',this)">Estadisticas</button>
     <button class="nav-tab" onclick="showTab('aguizotes',this)">Agüizotes</button>
     <button class="nav-tab" onclick="showTab('2025',this)">2025</button>
-    <button class="nav-tab admin-only" onclick="showTab('personales',this)" style="display:none">Mis Numeros</button>
+    <button class="nav-tab mis-only" onclick="showTab('personales',this)" style="display:none">Mis Numeros</button>
     <button class="nav-tab power-only" onclick="showTab('agente',this)" style="display:none">Agente IA</button>
     <button class="nav-tab admin-only" onclick="showTab('admin',this)" style="display:none">Admin</button>
   </div>
@@ -527,7 +527,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v17_power_role';
+const DATA_VERSION = 'v19_illo_mis';
 // Clear ALL app data on version change to avoid stale cache issues
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   const keysToRemove = [];
@@ -551,6 +551,7 @@ const DEFAULT_USERS = {
   juan:    { pass: 'loto123',     role: 'viewer' },
   maria:   { pass: 'chances456',  role: 'viewer' },
   ekrome:  { pass: 'loto123',     role: 'power'  },
+  illo:    { pass: 'monge2026',   role: 'viewer' },
 };
 // Merge defaults with any locally-added users (same device session)
 let USERS = Object.assign({}, DEFAULT_USERS, LS.get('la_users') || {});
@@ -578,6 +579,8 @@ function doLogin(){
     document.getElementById('app').style.display = 'block';
     document.getElementById('userPill').textContent = u.toUpperCase();
     // Show admin-only tabs for admin, hide for viewers
+    // mis-only = visible for ALL logged-in users (personal numbers)
+    document.querySelectorAll('.mis-only').forEach(el => el.style.display = '');
     if(currentUser.role === 'admin'){
       document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
       document.querySelectorAll('.power-only').forEach(el => el.style.display = '');
@@ -983,12 +986,20 @@ function resetToDefault(){
   location.reload();
 }
 
-let personalNums = LS.get('la_personal') || [
-  {num:22, desc:'Intuicion personal'},
-  {num:24, desc:'Cumpleanos'},
-  {num:30, desc:'Numero favorito'},
-];
-function savePersonal(){ LS.set('la_personal', personalNums); }
+// Per-user personal numbers
+const DEFAULT_PERSONAL = {
+  admin:  [{num:22, desc:'Intuicion personal'},{num:24, desc:'Cumpleanos'},{num:30, desc:'Numero favorito'}],
+  illo:   [{num:29, desc:'Numeros de Illo'},{num:20, desc:'Numeros de Illo'},{num:31, desc:'Numeros de Illo'}],
+};
+function getPersonalKey(){ return 'la_personal_' + (currentUser ? currentUser.username : 'guest'); }
+let personalNums = [];
+function loadPersonal(){
+  const key = getPersonalKey();
+  const saved = LS.get(key);
+  const user = currentUser ? currentUser.username : 'guest';
+  personalNums = saved || DEFAULT_PERSONAL[user] || [];
+}
+function savePersonal(){ LS.set(getPersonalKey(), personalNums); }
 
 // ══════════════════════════════════════════════════
 // TABS
@@ -1109,6 +1120,7 @@ function renderAguizotes(){
 }
 
 function initApp(){
+  loadPersonal();
   renderDashboard();
   renderStats();
   renderHistorial();
