@@ -527,7 +527,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v19_illo_mis';
+const DATA_VERSION = 'v20_fix_auth';
 // Clear ALL app data on version change to avoid stale cache issues
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   const keysToRemove = [];
@@ -554,11 +554,16 @@ const DEFAULT_USERS = {
   illo:    { pass: 'monge2026',   role: 'viewer' },
 };
 // Merge defaults with any locally-added users (same device session)
-let USERS = Object.assign({}, DEFAULT_USERS, LS.get('la_users') || {});
+// DEFAULT_USERS always wins — localStorage only adds extra users created via Admin panel
+const _lsUsers = LS.get('la_users') || {};
+// Remove from localStorage any user that conflicts with hardcoded defaults
+Object.keys(DEFAULT_USERS).forEach(u => { delete _lsUsers[u]; });
+let USERS = Object.assign({}, DEFAULT_USERS, _lsUsers);
 function saveUsers(){
-  // Always re-merge with defaults to prevent losing hardcoded users
-  USERS = Object.assign({}, DEFAULT_USERS, USERS);
-  LS.set('la_users', USERS);
+  // Strip hardcoded users before saving to LS (they're always in DEFAULT_USERS)
+  const toSave = Object.assign({}, USERS);
+  Object.keys(DEFAULT_USERS).forEach(u => { delete toSave[u]; });
+  LS.set('la_users', toSave);
 }
 
 let currentUser = null;
