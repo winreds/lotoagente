@@ -527,7 +527,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v20_fix_auth';
+const DATA_VERSION = 'v21_clear_users';
 // Clear ALL app data on version change to avoid stale cache issues
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   const keysToRemove = [];
@@ -535,7 +535,8 @@ if(localStorage.getItem('la_data_version') !== DATA_VERSION){
     const k = localStorage.key(i);
     if(k && k.startsWith('la_')) keysToRemove.push(k);
   }
-  keysToRemove.forEach(k => { if(k !== 'la_users') localStorage.removeItem(k); });
+  // la_users también se limpia — los usuarios hardcoded viven en DEFAULT_USERS
+  keysToRemove.forEach(k => localStorage.removeItem(k));
   localStorage.setItem('la_data_version', DATA_VERSION);
   console.log('LotoAgente: reset a ' + DATA_VERSION);
 }
