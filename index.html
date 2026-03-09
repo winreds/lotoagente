@@ -151,6 +151,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .result-type{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:4px;flex-shrink:0;}
 .rt-chances{background:rgba(34,211,160,.12);color:var(--green);}
 .rt-loto{background:rgba(245,200,66,.12);color:var(--gold);}
+.rt-especial{background:rgba(245,200,66,.25);color:#fff8e1;border:1px solid rgba(245,200,66,.5);font-weight:600;}
 .result-nums{display:flex;gap:6px;flex-wrap:wrap;}
 .rnum{width:30px;height:30px;border-radius:6px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;}
 .rnum.match{background:rgba(245,200,66,.15);border-color:rgba(245,200,66,.4);color:var(--gold);}
@@ -190,6 +191,44 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .insight.rise .insight-label{color:var(--green);}
 .insight.personal .insight-label{color:var(--blue);}
 .insight p{font-size:13px;color:var(--text);line-height:1.6;}
+
+/* PREDICCIONES */
+.pred-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.pred-card.acierto{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.04);}
+.pred-card.fallo{border-color:rgba(248,113,113,.2);}
+.pred-card.pendiente{border-color:rgba(245,200,66,.3);background:rgba(245,200,66,.03);}
+.pred-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
+.pred-fecha{font-size:11px;letter-spacing:2px;color:var(--text);}
+.pred-juego{font-size:8px;letter-spacing:2px;padding:3px 9px;border-radius:10px;}
+.pred-juego.chances{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);color:var(--green);}
+.pred-juego.loteria{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.3);color:var(--gold);}
+.pred-juego.lotto{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3);color:var(--blue);}
+.pred-status{font-size:8px;letter-spacing:2px;padding:3px 10px;border-radius:10px;font-weight:600;}
+.pred-status.acierto{background:rgba(52,211,153,.2);color:var(--green);}
+.pred-status.fallo{background:rgba(248,113,113,.15);color:#f87171;}
+.pred-status.pendiente{background:rgba(245,200,66,.15);color:var(--gold);}
+.pred-nums{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.pred-num{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;border:1px solid var(--border);}
+.pred-num.hit{background:rgba(52,211,153,.2);border-color:rgba(52,211,153,.5);color:var(--green);}
+.pred-num.miss{background:rgba(30,34,40,.6);color:var(--muted);}
+.pred-num.pending{background:rgba(245,200,66,.1);border-color:rgba(245,200,66,.3);color:var(--gold);}
+.pred-nota{font-size:10px;color:var(--text2);letter-spacing:1px;line-height:1.5;}
+.score-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.score-c{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.score-v{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;}
+.score-l{font-size:8px;letter-spacing:2px;color:var(--text2);margin-top:3px;}
+.add-pred-form{display:grid;gap:10px;}
+.pred-form-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
+.pred-label{font-size:9px;letter-spacing:2px;color:var(--text2);display:block;margin-bottom:5px;}
+.pred-select{background:rgba(245,200,66,.05);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;cursor:pointer;}
+.pred-select:focus{border-color:var(--gold);}
+.pred-ninput{width:52px;background:rgba(245,200,66,.05);border:1px solid var(--border);border-radius:8px;padding:9px;text-align:center;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:18px;outline:none;}
+.pred-ninput:focus{border-color:var(--gold);}
+.pred-btn{background:var(--gold);border:none;border-radius:9px;padding:9px 18px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:#0d0d0d;cursor:pointer;transition:all .2s;}
+.pred-btn:hover{opacity:.85;}
+.pred-btn.secondary{background:rgba(245,200,66,.15);color:var(--gold);border:1px solid rgba(245,200,66,.3);}
+.vitrina-link{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:12px;margin-bottom:16px;text-decoration:none;}
+.vitrina-link span{font-size:10px;letter-spacing:2px;color:var(--green);}
 </style>
 </head>
 <body>
@@ -225,6 +264,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="nav-tab" onclick="showTab('estadisticas',this)">Estadisticas</button>
     <button class="nav-tab" onclick="showTab('aguizotes',this)">Agüizotes</button>
     <button class="nav-tab" onclick="showTab('2025',this)">2025</button>
+    <button class="nav-tab" onclick="showTab('predicciones',this)">Predicciones</button>
     <button class="nav-tab mis-only" onclick="showTab('personales',this)" style="display:none">Mis Numeros</button>
     <button class="nav-tab power-only" onclick="showTab('agente',this)" style="display:none">Agente IA</button>
     <button class="nav-tab admin-only" onclick="showTab('admin',this)" style="display:none">Admin</button>
@@ -510,6 +550,80 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       </div>
     </div>
 
+
+    <!-- PREDICCIONES -->
+    <div id="tab-predicciones" class="tab-panel">
+      <div class="sec-hdr"><h2>Predicciones</h2><p>Historial de aciertos — Chances · Lotería · Lotto</p></div>
+
+      <!-- Score strip -->
+      <div class="score-strip">
+        <div class="score-c" style="border-color:rgba(52,211,153,.3)">
+          <div class="score-v" id="pred-aciertos" style="color:var(--green)">0</div>
+          <div class="score-l">Aciertos</div>
+        </div>
+        <div class="score-c" style="border-color:rgba(245,200,66,.3)">
+          <div class="score-v" id="pred-pendientes" style="color:var(--gold)">0</div>
+          <div class="score-l">Pendientes</div>
+        </div>
+        <div class="score-c" style="border-color:rgba(248,113,113,.2)">
+          <div class="score-v" id="pred-pct" style="color:var(--text2)">--%</div>
+          <div class="score-l">% Efectividad</div>
+        </div>
+      </div>
+
+      <!-- Vitrina pública info -->
+      <div class="vitrina-link">
+        <span style="font-size:16px">🔗</span>
+        <div>
+          <div class="score-l" style="color:var(--green);margin-bottom:2px">VITRINA PÚBLICA</div>
+          <span>Comparte el link de tu app — los aciertos son visibles para todos sin login</span>
+        </div>
+      </div>
+
+      <!-- Admin: agregar predicción -->
+      <div class="box admin-pred-form" id="adminPredForm" style="display:none">
+        <div class="box-title">+ Nueva Predicción</div>
+        <div class="box-sub">Registra tus números antes del sorteo</div>
+        <div class="add-pred-form">
+          <div class="pred-form-row">
+            <div>
+              <label class="pred-label">JUEGO</label>
+              <select id="pred-juego" class="pred-select">
+                <option value="Chances">Chances</option>
+                <option value="Loteria">Lotería Nacional</option>
+                <option value="Lotto">Lotto CR</option>
+                <option value="Lotto Revancha">Lotto Revancha</option>
+              </select>
+            </div>
+            <div>
+              <label class="pred-label">FECHA SORTEO</label>
+              <input type="date" id="pred-fecha" class="pred-select" style="cursor:pointer">
+            </div>
+          </div>
+          <div>
+            <label class="pred-label">NÚMEROS PREDICHOS (2 para Chances/Lotería, hasta 5 para Lotto)</label>
+            <div class="pred-form-row">
+              <input class="pred-ninput" id="pn1" maxlength="2" placeholder="00">
+              <input class="pred-ninput" id="pn2" maxlength="2" placeholder="00">
+              <input class="pred-ninput" id="pn3" maxlength="2" placeholder="--">
+              <input class="pred-ninput" id="pn4" maxlength="2" placeholder="--">
+              <input class="pred-ninput" id="pn5" maxlength="2" placeholder="--">
+            </div>
+          </div>
+          <div>
+            <label class="pred-label">NOTA (opcional)</label>
+            <input type="text" id="pred-nota" class="pred-select" style="width:100%" placeholder="ej: Cruz de la Suerte + historial 2026">
+          </div>
+          <div class="pred-form-row">
+            <button class="pred-btn" onclick="savePrediction()">GUARDAR PREDICCIÓN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de predicciones -->
+      <div id="predList"></div>
+    </div>
+
     </div>
   </div>
 </div>
@@ -527,7 +641,7 @@ const LS = {
 // ══════════════════════════════════════════════════
 // DATA VERSION — bump to force localStorage reset
 // ══════════════════════════════════════════════════
-const DATA_VERSION = 'v21_clear_users';
+const DATA_VERSION = 'v23_predicciones';
 // Clear ALL app data on version change to avoid stale cache issues
 if(localStorage.getItem('la_data_version') !== DATA_VERSION){
   const keysToRemove = [];
@@ -807,6 +921,9 @@ let draws = LS.get('la_draws') || [
   {fecha:'2025-06-27',tipo:'Chances',pos:'1er',num:79,serie:''},
   {fecha:'2025-06-27',tipo:'Chances',pos:'2do',num:52,serie:''},
   {fecha:'2025-06-27',tipo:'Chances',pos:'3ero',num:84,serie:''},
+  {fecha:'2025-07-06',tipo:'Loteria Nacional',pos:'1er',num:52,serie:'Gordito Medio Ano'},
+  {fecha:'2025-07-06',tipo:'Loteria Nacional',pos:'2do',num:13,serie:'Gordito Medio Ano'},
+  {fecha:'2025-07-06',tipo:'Loteria Nacional',pos:'3ero',num:34,serie:'Gordito Medio Ano'},
   {fecha:'2025-07-08',tipo:'Chances',pos:'1er',num:96,serie:''},
   {fecha:'2025-07-08',tipo:'Chances',pos:'2do',num:15,serie:''},
   {fecha:'2025-07-08',tipo:'Chances',pos:'3ero',num:77,serie:''},
@@ -897,6 +1014,9 @@ let draws = LS.get('la_draws') || [
   {fecha:'2025-10-17',tipo:'Chances',pos:'1er',num:13,serie:''},
   {fecha:'2025-10-17',tipo:'Chances',pos:'2do',num:41,serie:''},
   {fecha:'2025-10-17',tipo:'Chances',pos:'3ero',num:19,serie:''},
+  {fecha:'2025-12-14',tipo:'Loteria Nacional',pos:'1er',num:78,serie:'Gordo Navideno'},
+  {fecha:'2025-12-14',tipo:'Loteria Nacional',pos:'2do',num:59,serie:'Gordo Navideno'},
+  {fecha:'2025-12-14',tipo:'Loteria Nacional',pos:'3ero',num:92,serie:'Gordo Navideno'},
   {fecha:'2026-01-04',tipo:'Loteria',pos:'1er',num:3,serie:''},
   {fecha:'2026-01-04',tipo:'Loteria',pos:'2do',num:61,serie:''},
   {fecha:'2026-01-04',tipo:'Loteria',pos:'3ero',num:79,serie:''},
@@ -1013,6 +1133,7 @@ function savePersonal(){ LS.set(getPersonalKey(), personalNums); }
 function showTab(name, btn){
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  if(name==='predicciones') renderPredicciones();
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='estadisticas'||name==='dashboard') setTimeout(animateBars, 100);
@@ -1133,6 +1254,7 @@ function initApp(){
   renderPersonalTab();
   renderAdminTab();
   renderAguizotes();
+  renderPredicciones();
 }
 
 function renderDashboard(){
@@ -1165,10 +1287,11 @@ function renderDashboard(){
         const isPersonal = personalNums.some(p=>p.num===d.num);
         return `<div class="rnum ${isPersonal?'pmatch':''}">${String(d.num).padStart(2,'0')}</div>`;
       }).join('');
-      const cls = tipo==='Chances'?'rt-chances':'rt-loto';
+      const cls = (tipo==='Chances'||tipo==='Chances Mundialista')?'rt-chances': tipo==='Loteria Nacional'?'rt-especial':'rt-loto';
+      const serie = ds[0]&&ds[0].serie ? ' · '+ds[0].serie : '';
       return `<div class="result-row">
         <div class="result-date">${fecha}</div>
-        <div class="result-type ${cls}">${tipo}</div>
+        <div class="result-type ${cls}">${tipo}${serie}</div>
         <div class="result-nums">${nums}</div>
       </div>`;
     }).join('');
@@ -1269,10 +1392,11 @@ function renderHistorial(){
         const isPersonal = personalNums.some(p=>p.num===d.num);
         return `<div class="rnum ${isPersonal?'pmatch':''}" title="${d.pos}">${String(d.num).padStart(2,'0')}</div>`;
       }).join('');
-      const cls = tipo==='Chances'?'rt-chances':'rt-loto';
+      const cls = (tipo==='Chances'||tipo==='Chances Mundialista')?'rt-chances': tipo==='Loteria Nacional'?'rt-especial':'rt-loto';
+      const serie = ds[0]&&ds[0].serie ? ' · '+ds[0].serie : '';
       return `<div class="result-row">
         <div class="result-date">${fecha}</div>
-        <div class="result-type ${cls}">${tipo}</div>
+        <div class="result-type ${cls}">${tipo}${serie}</div>
         <div class="result-nums">${nums}</div>
       </div>`;
     }).join('');
@@ -1641,6 +1765,165 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendToAgent(); }
   });
 });
+
+// ══════════════════════════════════════════════════
+// PREDICCIONES — Sistema de aciertos
+// ══════════════════════════════════════════════════
+let predictions = LS.get('la_predictions') || [];
+
+function savePredictions(){ LS.set('la_predictions', predictions); }
+
+function savePrediction(){
+  const juego = document.getElementById('pred-juego').value;
+  const fecha = document.getElementById('pred-fecha').value;
+  if(!fecha){ alert('Selecciona la fecha del sorteo'); return; }
+
+  const maxNums = juego.includes('Lotto') ? 5 : 3;
+  const nums = [];
+  for(let i=1;i<=5;i++){
+    const v = document.getElementById('pn'+i).value.trim();
+    if(v !== '' && v !== '--'){
+      const n = parseInt(v);
+      if(!isNaN(n) && n>=0 && n<=99) nums.push(n);
+    }
+  }
+  if(nums.length < 1){ alert('Ingresa al menos 1 número'); return; }
+
+  const nota = document.getElementById('pred-nota').value.trim();
+  const pred = {
+    id: Date.now(),
+    juego, fecha, nums, nota,
+    status: 'pendiente', // pendiente | acierto | fallo
+    resultado: [],       // números que salieron en ese sorteo
+    aciertos: 0,
+    savedAt: new Date().toISOString()
+  };
+  predictions.unshift(pred);
+  savePredictions();
+
+  // Clear form
+  ['pn1','pn2','pn3','pn4','pn5'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pred-nota').value = '';
+
+  renderPredicciones();
+  alert('✅ Predicción guardada para ' + fecha);
+}
+
+function deletePrediction(id){
+  if(!confirm('¿Eliminar esta predicción?')) return;
+  predictions = predictions.filter(p => p.id !== id);
+  savePredictions();
+  renderPredicciones();
+}
+
+function verificarPrediction(id){
+  const pred = predictions.find(p => p.id === id);
+  if(!pred) return;
+
+  // Get resultado numbers from draws on that date
+  const sorteoDelDia = draws.filter(d => d.fecha === pred.fecha);
+  if(!sorteoDelDia.length){
+    alert('No hay sorteo registrado para ' + pred.fecha + '. Agrega primero el resultado en Resultados.');
+    return;
+  }
+
+  // Match by game type
+  let resultadoNums = [];
+  if(pred.juego === 'Chances' || pred.juego === 'Loteria'){
+    const tipo = pred.juego === 'Chances' ? 'Chances' : null;
+    const matching = sorteoDelDia.filter(d => tipo ? d.tipo.includes('Chance') : d.tipo.includes('Loter'));
+    resultadoNums = matching.map(d => d.num);
+  } else if(pred.juego.includes('Lotto')){
+    // Check lotto draws
+    const isRev = pred.juego.includes('Revancha');
+    const lottoDraws = (LS.get('la_lotto_draws') || []).filter(d => d.f === pred.fecha);
+    if(lottoDraws.length){
+      resultadoNums = isRev ? lottoDraws[0].r : lottoDraws[0].l;
+    }
+  }
+
+  if(!resultadoNums.length){
+    // Manual entry fallback
+    const input = prompt('No encontré el resultado automáticamente.\nIngresa los números que salieron separados por coma (ej: 43,78,23):');
+    if(!input) return;
+    resultadoNums = input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+  }
+
+  pred.resultado = resultadoNums;
+  pred.aciertos = pred.nums.filter(n => resultadoNums.includes(n)).length;
+  pred.status = pred.aciertos >= 1 ? 'acierto' : 'fallo';
+  savePredictions();
+  renderPredicciones();
+}
+
+function renderPredicciones(){
+  // Show/hide admin form
+  const isAdmin = currentUser && (currentUser.role==='admin'||currentUser.role==='power');
+  const formEl = document.getElementById('adminPredForm');
+  if(formEl) formEl.style.display = isAdmin ? 'block' : 'none';
+
+  // Set today as default date
+  const dateInput = document.getElementById('pred-fecha');
+  if(dateInput && !dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
+
+  const list = document.getElementById('predList');
+  if(!list) return;
+
+  if(!predictions.length){
+    list.innerHTML = '<div style="color:var(--text2);font-size:11px;letter-spacing:1px;padding:20px;text-align:center">Aún no hay predicciones registradas.<br><br>Las predicciones registradas aquí demuestran tu historial de aciertos.</div>';
+    document.getElementById('pred-aciertos').textContent = '0';
+    document.getElementById('pred-pendientes').textContent = '0';
+    document.getElementById('pred-pct').textContent = '--%';
+    return;
+  }
+
+  const aciertos = predictions.filter(p => p.status==='acierto').length;
+  const fallos   = predictions.filter(p => p.status==='fallo').length;
+  const pendientes = predictions.filter(p => p.status==='pendiente').length;
+  const total = aciertos + fallos;
+  const pct = total ? Math.round((aciertos/total)*100) : null;
+
+  document.getElementById('pred-aciertos').textContent = aciertos;
+  document.getElementById('pred-pendientes').textContent = pendientes;
+  document.getElementById('pred-pct').textContent = pct !== null ? pct+'%' : '--%';
+
+  list.innerHTML = predictions.map(pred => {
+    const juegoClass = pred.juego.includes('Chance')?'chances':pred.juego.includes('Loter')?'loteria':'lotto';
+    const statusLabel = pred.status==='acierto'?'✅ ACERTÓ':pred.status==='fallo'?'❌ FALLÓ':'⏳ PENDIENTE';
+    const statusClass = pred.status;
+
+    const numBalls = pred.nums.map(n => {
+      let cls = 'pending';
+      if(pred.resultado.length){
+        cls = pred.resultado.includes(n) ? 'hit' : 'miss';
+      }
+      return `<div class="pred-num ${cls}">${String(n).padStart(2,'0')}</div>`;
+    }).join('');
+
+    const resultadoStr = pred.resultado.length
+      ? `<div style="margin-top:6px;font-size:9px;color:var(--text2);letter-spacing:1px">Resultado: ${pred.resultado.map(n=>String(n).padStart(2,'0')).join(' · ')} &nbsp;|&nbsp; <span style="color:${pred.aciertos>0?'var(--green)':'var(--text2)'}"> ${pred.aciertos} acierto${pred.aciertos!==1?'s':''}</span></div>`
+      : '';
+
+    const adminBtns = isAdmin ? `
+      <div style="display:flex;gap:8px;margin-top:10px">
+        ${pred.status==='pendiente'?`<button class="pred-btn secondary" onclick="verificarPrediction(${pred.id})" style="font-size:12px;padding:6px 14px">VERIFICAR RESULTADO</button>`:''}
+        <button onclick="deletePrediction(${pred.id})" style="background:none;border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:6px 12px;color:#f87171;font-size:10px;cursor:pointer;letter-spacing:1px">ELIMINAR</button>
+      </div>` : '';
+
+    return `<div class="pred-card ${pred.status}">
+      <div class="pred-header">
+        <span class="pred-fecha">${pred.fecha}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="pred-juego ${juegoClass}">${pred.juego}</span>
+          <span class="pred-status ${statusClass}">${statusLabel}</span>
+        </div>
+      </div>
+      <div class="pred-nums">${numBalls}</div>
+      ${pred.nota ? `<div class="pred-nota">💡 ${pred.nota}</div>` : ''}
+      ${resultadoStr}
+      ${adminBtns}
+    </div>`;
+  }).join('');
+}
+
 </script>
-</body>
-</html>
